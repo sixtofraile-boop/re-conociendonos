@@ -1,0 +1,26 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Sesion {
+  id                  String   @id @default(cuid())
+  version             String
+  estado              String
+  email_A             String?
+  email_B             String?
+  password_A          String?
+  password_B          String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  
+  respuestas          Json?
+  
+  hipotesis_A         String?
+  hipotesis_B        String?
+  
+  quien_ha_respondido String?
+}
