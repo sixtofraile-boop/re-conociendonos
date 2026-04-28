@@ -259,6 +259,92 @@ export function calcularResultadosIndividual(
   };
 }
 
+export function calcularResultadosIndividualPareja(
+  respuestas: RespuestaPareja[]
+): ResultadoGlobal {
+  const dimensiones: Dimension[] = ["AMISTAD", "DESEO", "PROYECTO", "COMPROMISO"];
+  const resultados: ResultadoDimension[] = [];
+
+  const mapByDimension = (resps: RespuestaPareja[]): Record<Dimension, RespuestaPareja[]> => {
+    const map: Record<Dimension, RespuestaPareja[]> = { AMISTAD: [], DESEO: [], PROYECTO: [], COMPROMISO: [] };
+    resps.forEach(r => map[r.dimension].push(r));
+    return map;
+  };
+
+  const map = mapByDimension(respuestas);
+
+  let global_hist = 0;
+  let global_act = 0;
+
+  for (const dim of dimensiones) {
+    const pregDim = map[dim];
+    
+    const yo_hist = pregDim.length ? pregDim.reduce((acc, r) => acc + r.hist_yo * 10, 0) / pregDim.length : 0;
+    const yo_act = pregDim.length ? pregDim.reduce((acc, r) => acc + r.act_yo * 10, 0) / pregDim.length : 0;
+    const variacion = yo_act - yo_hist;
+    
+    const nivel_act = yo_act;
+    const nivel_hist = yo_hist;
+    const brecha = 0;
+    
+    const estado = semaforoPareja(nivel_act, variacion, brecha);
+    const zonaResult = zona(estado, variacion);
+    const criterio = criterioTexto(variacion, nivel_act, brecha);
+    
+    const puntaje = (100 - nivel_act) + Math.abs(variacion) * 1.5;
+    
+    const puntajesPregunta: { id: number; puntaje: number }[] = pregDim.map(r => {
+      const n_act = r.act_yo * 10;
+      const v = n_act - r.hist_yo * 10;
+      return { id: r.pregunta_id, puntaje: (100 - n_act) + Math.abs(v) * 1.5 };
+    });
+    
+    puntajesPregunta.sort((a, b) => b.puntaje - a.puntaje);
+    const topFocos: FocoPregunta[] = puntajesPregunta.slice(0, 3).map((p, i) => {
+      const preg = PREGUNTAS_PAREJA.find(pr => pr.id === p.id);
+      if (!preg) return null;
+      return {
+        pregunta_id: p.id,
+        texto: preg.texto,
+        nivel_act: p.puntaje,
+        brecha: 0,
+        variacion: 0,
+        rank: i + 1
+      };
+    }).filter((f): f is FocoPregunta => f !== null);
+    
+    resultados.push({
+      dimension: dim,
+      yo_hist_pct: yo_hist,
+      yo_act_pct: yo_act,
+      nivel_hist,
+      nivel_act,
+      variacion,
+      brecha,
+      estado,
+      zona: zonaResult,
+      puntaje,
+      rank: 0,
+      clave_frase: `${dim}|${estado}`,
+      criterio_texto: criterio,
+      focos: topFocos
+    });
+    
+    global_hist += nivel_hist;
+    global_act += nivel_act;
+  }
+  
+  resultados.sort((a, b) => b.puntaje - a.puntaje);
+  resultados.forEach((r, i) => r.rank = i + 1);
+  
+  return {
+    global_hist: global_hist / 4,
+    global_act: global_act / 4,
+    global_var: global_act / 4 - global_hist / 4,
+    dimensiones: resultados
+  };
+}
+
 export function mensajeCierre(estados: Estado[]): string {
   const rojos = estados.filter(e => e === "ROJO").length;
   const amarillos = estados.filter(e => e === "AMARILLO").length;

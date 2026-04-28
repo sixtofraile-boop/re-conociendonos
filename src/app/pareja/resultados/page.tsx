@@ -36,8 +36,8 @@ export default function ResultadosPareja() {
       .then(async (data) => {
         const respuestas = data.sesion?.respuestas;
         if (respuestas && respuestas[per]) {
-          const { calcularResultadosPareja } = await import("@/lib/calcular");
-          const results = calcularResultadosPareja(respuestas.A || [], respuestas.B || []);
+          const { calcularResultadosIndividualPareja } = await import("@/lib/calcular");
+          const results = calcularResultadosIndividualPareja(respuestas[per]);
           setResultado(results);
         }
       })
