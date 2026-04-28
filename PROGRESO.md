@@ -105,10 +105,12 @@ npm run dev
 
 1. ✓ Cuadrados desiguales en landing - corregido con flexbox
 2. ✓ Crear contraseña - agregado campo confirmar contraseña
-3. ✓ Error debase de datos SQLite - migrado a PostgreSQL
+3. ✓ Error de base de datos SQLite - migrado a PostgreSQL
 4. ✓ Error en calculation de focos - agregado null check
+5. ✓ Tabla Sesion no existe en producción - agregado db push en vercel.json
+6. ⏳ Resultados muestran 0% - investigando recuperación de respuestas (agregados logs de debug)
 
 ---
 
 ## Última actualización
-27/04/2026
+28/04/2026
