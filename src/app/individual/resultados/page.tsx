@@ -4,36 +4,44 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { FRASES_GATILLO_INDIVIDUAL, PREGUNTAS_REFLEXION, COLOR_DIMENSION, COLOR_ESTADO } from "@/lib/preguntas";
 import { ResultadoDimension, Estado } from "@/lib/types";
-import { calcularResultadosIndividual } from "@/lib/calcular";
-import { mensajeCierre } from "@/lib/calcular";
+import { calcularResultadosIndividual, mensajeCierre } from "@/lib/calcular";
 
 function getCookie(name: string): string | null {
   if (typeof document === "undefined") return null;
   const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
-  return match ? match[2] : null;
+  return match ? decodeURIComponent(match[2]) : null;
 }
+
+const ZONA_COLORES: Record<string, { bg: string; text: string }> = {
+  "Zona crítica":     { bg: "#FFC7CE", text: "#9C0006" },
+  "Zona sensible":    { bg: "#FFE0B2", text: "#E65100" },
+  "Zona de atención": { bg: "#FFEB9C", text: "#9C6500" },
+  "Zona sólida":      { bg: "#C6EFCE", text: "#276221" },
+};
 
 export default function ResultadosIndividual() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [resultado, setResultado] = useState<{ global: { hist: number; act: number; var: number }; dimensiones: ResultadoDimension[] } | null>(null);
+  const [resultado, setResultado] = useState<{
+    global: { hist: number; act: number; var: number };
+    dimensiones: ResultadoDimension[];
+  } | null>(null);
+  const [nombre, setNombre] = useState<string | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
 
   useEffect(() => {
     const sid = getCookie("session_id");
-    if (!sid) {
-      router.push("/individual");
-      return;
-    }
+    const nom = getCookie("nombre");
+    if (!sid) { router.push("/individual"); return; }
     setSessionId(sid);
+    setNombre(nom);
 
     fetch(`/api/sesiones?session_id=${sid}`)
       .then((res) => res.json())
-      .then(async (data) => {
+      .then((data) => {
         const respuestas = data.sesion?.respuestas?.I;
         if (respuestas && Array.isArray(respuestas) && respuestas.length > 0) {
-          const results = calcularResultadosIndividual(respuestas);
-          setResultado(results);
+          setResultado(calcularResultadosIndividual(respuestas));
         }
       })
       .catch(console.error)
@@ -41,138 +49,216 @@ export default function ResultadosIndividual() {
   }, [router]);
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">Cargando...</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ background: "#F8F8F8" }}>
+        <div className="text-center">
+          <div className="w-8 h-8 rounded-full border-2 border-t-transparent animate-spin mx-auto mb-3" style={{ borderColor: "#028090", borderTopColor: "transparent" }} />
+          <p style={{ color: "#444455" }}>Calculando tu mapa...</p>
+        </div>
+      </div>
+    );
   }
 
   if (!resultado) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p>No hay resultados disponibles.</p>
+      <div className="min-h-screen flex items-center justify-center flex-col gap-4" style={{ background: "#F8F8F8" }}>
+        <p style={{ color: "#444455" }}>No se encontraron respuestas guardadas.</p>
+        <button onClick={() => router.push("/individual/encuesta")}
+          className="px-6 py-3 rounded-xl font-semibold text-white" style={{ background: "#028090" }}>
+          Volver a la encuesta
+        </button>
       </div>
     );
   }
 
   const estados = resultado.dimensiones.map((d) => d.estado);
   const mensaje = mensajeCierre(estados);
+  const rojos = estados.filter((e) => e === "ROJO").length;
+  const mostrarProfesional = rojos >= 3;
 
   const getPercepcionPareja = () => {
-    let positivos = 0;
-    let negativos = 0;
+    let masAlta = 0, masBaja = 0;
     resultado.dimensiones.forEach((d) => {
-      if (d.brecha > 15) positivos++;
-      if (d.brecha < -5 || d.brecha < 0) negativos++;
+      if (d.brecha === 10) masAlta++;
+      if (d.brecha === 20) masBaja++;
     });
-    if (positivos > negativos) return "La percibes más positiva de lo que tú sientes";
-    if (negativos > positivos) return "La percibes más negativa de lo que tú sientes";
-    return "Tu percepción de la pareja es equilibrada";
+    if (masAlta > masBaja) return "Tiendes a percibir que tu pareja valora la relación más que tú";
+    if (masBaja > masAlta) return "Tiendes a percibir que tu pareja valora la relación menos que tú";
+    return "Tu percepción de la pareja es equilibrada respecto a tu propia mirada";
+  };
+
+  const shareWhatsApp = () => {
+    const resumen = resultado.dimensiones
+      .map((d) => `${d.dimension}: ${d.nivel_act.toFixed(0)}% (${d.estado})`)
+      .join("\n");
+    const texto = `Mi mapa RE-CONOCIÉNDONOS:\n\n${resumen}\n\nVariación global: ${resultado.global.var >= 0 ? "+" : ""}${resultado.global.var.toFixed(0)}%`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(texto)}`);
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white p-4 md:p-8">
-      <div className="max-w-3xl mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-slate-800 mb-2">Mi Mirada</h1>
-          <p className="text-slate-600">Resultados de tu reflexión personal</p>
-        </div>
+    <div className="min-h-screen" style={{ background: "#F8F8F8" }}>
 
-        <div className="bg-white rounded-2xl p-6 shadow-lg mb-8">
-          <div className="text-center mb-6">
-            <p className="text-slate-500 text-sm">Resumen global</p>
-            <div className="flex justify-center gap-8 mt-4">
-              <div>
-                <p className="text-xs text-slate-500">Histórico</p>
-                <p className="text-2xl font-bold text-slate-700">{resultado.global.hist.toFixed(0)}%</p>
+      {/* Header */}
+      <div style={{ background: "#1A274A" }} className="px-6 py-10">
+        <div className="max-w-3xl mx-auto text-center">
+          <p className="text-xs font-semibold tracking-widest uppercase mb-2" style={{ color: "#E8B850" }}>MI MIRADA</p>
+          <h1 className="text-3xl font-bold text-white mb-2">
+            {nombre ? `El mapa de ${nombre}` : "Tu mapa personal"}
+          </h1>
+          <p style={{ color: "#B8CCEE" }} className="text-sm">Las 4 dimensiones vistas desde tu mirada</p>
+        </div>
+      </div>
+
+      <div className="max-w-3xl mx-auto px-4 py-8 space-y-6">
+
+        {/* Resumen global */}
+        <div className="bg-white rounded-2xl p-6 shadow-sm">
+          <p className="text-xs font-semibold uppercase tracking-wide mb-4" style={{ color: "#028090" }}>Resumen global</p>
+          <div className="flex justify-center gap-8 mb-4">
+            {[
+              { label: "Histórico", value: `${resultado.global.hist.toFixed(0)}%` },
+              { label: "Hoy",       value: `${resultado.global.act.toFixed(0)}%` },
+              { label: "Variación", value: `${resultado.global.var >= 0 ? "+" : ""}${resultado.global.var.toFixed(0)}%`, color: resultado.global.var >= 0 ? "#276221" : "#9C0006" },
+            ].map((item) => (
+              <div key={item.label} className="text-center">
+                <p className="text-xs mb-1" style={{ color: "#888" }}>{item.label}</p>
+                <p className="text-2xl font-bold" style={{ color: item.color || "#1A274A" }}>{item.value}</p>
               </div>
-              <div>
-                <p className="text-xs text-slate-500">Hoy</p>
-                <p className="text-2xl font-bold text-slate-700">{resultado.global.act.toFixed(0)}%</p>
-              </div>
-              <div>
-                <p className="text-xs text-slate-500">Variación</p>
-                <p className={`text-2xl font-bold ${resultado.global.var >= 0 ? "text-green-600" : "text-red-600"}`}>
-                  {resultado.global.var >= 0 ? "+" : ""}{resultado.global.var.toFixed(0)}%
-                </p>
-              </div>
-            </div>
+            ))}
           </div>
-          <div className="text-center p-3 bg-purple-50 rounded-lg">
-            <p className="text-sm text-purple-700">{getPercepcionPareja()}</p>
+          <div className="text-center p-3 rounded-xl text-sm font-medium" style={{ background: "#EEF2FF", color: "#2C3E6B" }}>
+            {getPercepcionPareja()}
           </div>
         </div>
 
-        <div className="space-y-4 mb-8">
-          {resultado.dimensiones.map((dim) => (
-            <div key={dim.dimension} className="bg-white rounded-xl p-5 shadow-md">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-3">
-                  <div
-                    className="w-4 h-4 rounded-full"
-                    style={{ backgroundColor: COLOR_DIMENSION[dim.dimension] }}
-                  />
-                  <h3 className="font-semibold text-slate-800">{dim.dimension}</h3>
-                </div>
-                <span
-                  className="px-3 py-1 rounded-full text-xs font-medium text-white"
-                  style={{ backgroundColor: COLOR_ESTADO[dim.estado] }}
-                >
-                  {dim.estado}
-                </span>
-              </div>
-              <div className="flex justify-between text-sm text-slate-600 mb-2">
-                <span>Hist: {dim.nivel_hist.toFixed(0)}%</span>
-                <span>Hoy: {dim.nivel_act.toFixed(0)}%</span>
-                <span>Var: {dim.variacion >= 0 ? "+" : ""}{dim.variacion.toFixed(0)}%</span>
-              </div>
-              <p className="text-sm text-slate-500">{dim.criterio_texto}</p>
-            </div>
-          ))}
-        </div>
-
-        {(estados.includes("ROJO") || estados.includes("AMARILLO")) && (
-          <div className="space-y-6 mb-8">
-            <h2 className="text-xl font-semibold text-slate-800">Reflexiones</h2>
-            {resultado.dimensiones
-              .filter((d) => d.estado !== "VERDE")
-              .map((dim) => {
-                const frases = FRASES_GATILLO_INDIVIDUAL[`${dim.dimension}|${dim.estado}`];
-                return (
-                  <div key={dim.dimension} className="bg-white rounded-2xl p-6 shadow-lg">
-                    <div className="flex items-center gap-3 mb-4">
-                      <div
-                        className="w-4 h-4 rounded-full"
-                        style={{ backgroundColor: COLOR_DIMENSION[dim.dimension] }}
-                      />
-                      <h3 className="font-semibold text-slate-800">{dim.dimension}</h3>
+        {/* Dimensiones */}
+        <div className="space-y-3">
+          {resultado.dimensiones.map((dim) => {
+            const zona = ZONA_COLORES[dim.zona];
+            return (
+              <div key={dim.dimension} className="bg-white rounded-2xl p-5 shadow-sm"
+                style={{ borderLeft: `4px solid ${COLOR_DIMENSION[dim.dimension]}` }}>
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <div className="w-3 h-3 rounded-full" style={{ background: COLOR_DIMENSION[dim.dimension] }} />
+                      <h3 className="font-bold" style={{ color: "#1A274A" }}>{dim.dimension}</h3>
                     </div>
-                    <p className="text-slate-600 mb-2">{frases?.frase1}</p>
-                    <p className="text-slate-500 text-sm mb-4">{frases?.frase2}</p>
-                    <div className="border-t border-slate-100 pt-4">
-                      <p className="text-sm font-medium text-slate-700 mb-3">Preguntas para reflexionar:</p>
-                      <ul className="space-y-2">
-                        {PREGUNTAS_REFLEXION[dim.dimension].slice(0, 3).map((preg, i) => (
-                          <li key={i} className="text-sm text-slate-600 flex gap-2">
-                            <span className="text-slate-400">•</span>
-                            {preg}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
+                    <span className="text-xs px-2 py-0.5 rounded-full font-medium"
+                      style={{ background: zona.bg, color: zona.text }}>
+                      {dim.zona}
+                    </span>
                   </div>
-                );
-              })}
+                  <span className="px-3 py-1 rounded-full text-xs font-bold text-white"
+                    style={{ background: COLOR_ESTADO[dim.estado as Estado] }}>
+                    {dim.estado}
+                  </span>
+                </div>
+                <div className="flex gap-6 text-sm mb-2" style={{ color: "#444455" }}>
+                  <span>Hist: <strong>{dim.nivel_hist.toFixed(0)}%</strong></span>
+                  <span>Hoy: <strong>{dim.nivel_act.toFixed(0)}%</strong></span>
+                  <span style={{ color: dim.variacion >= 0 ? "#276221" : "#9C0006" }}>
+                    {dim.variacion >= 0 ? "▲" : "▼"} {Math.abs(dim.variacion).toFixed(0)}%
+                  </span>
+                </div>
+                <p className="text-sm" style={{ color: "#666" }}>{dim.criterio_texto}</p>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Reflexiones por dimensión */}
+        {(estados.includes("ROJO") || estados.includes("AMARILLO")) && (
+          <div className="space-y-4">
+            <h2 className="text-lg font-bold px-1" style={{ color: "#1A274A" }}>Reflexiones</h2>
+            {resultado.dimensiones.filter((d) => d.estado !== "VERDE").map((dim) => {
+              const frases = FRASES_GATILLO_INDIVIDUAL[`${dim.dimension}|${dim.estado}`];
+              return (
+                <div key={dim.dimension} className="bg-white rounded-2xl p-6 shadow-sm"
+                  style={{ borderLeft: `4px solid ${COLOR_DIMENSION[dim.dimension]}` }}>
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-3 h-3 rounded-full" style={{ background: COLOR_DIMENSION[dim.dimension] }} />
+                    <h3 className="font-bold" style={{ color: "#1A274A" }}>{dim.dimension}</h3>
+                  </div>
+                  <p className="mb-2 leading-relaxed" style={{ color: "#444455" }}>{frases?.frase1}</p>
+                  <p className="text-sm mb-4" style={{ color: "#666" }}>{frases?.frase2}</p>
+                  <div className="border-t pt-4" style={{ borderColor: "#F0F2F5" }}>
+                    <p className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: "#028090" }}>
+                      Preguntas para reflexionar
+                    </p>
+                    <ul className="space-y-2">
+                      {PREGUNTAS_REFLEXION[dim.dimension].slice(0, 3).map((preg, i) => (
+                        <li key={i} className="text-sm flex gap-2" style={{ color: "#444455" }}>
+                          <span style={{ color: COLOR_DIMENSION[dim.dimension] }}>·</span>
+                          {preg}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         )}
 
-        <div className="bg-white rounded-2xl p-6 shadow-lg mb-8">
-          <p className="text-slate-600 text-center">{mensaje}</p>
+        {/* Mensaje de cierre */}
+        <div className="rounded-2xl p-6 text-center" style={{ background: "#1A274A" }}>
+          <p className="text-white leading-relaxed">{mensaje}</p>
         </div>
 
-        <div className="text-center">
+        {/* Derivación profesional — 3+ ROJO */}
+        {mostrarProfesional && (
+          <div className="rounded-2xl p-6" style={{ background: "#FFEB9C", border: "1px solid #E8B850" }}>
+            <p className="font-bold mb-2" style={{ color: "#1A274A" }}>Apoyo profesional disponible</p>
+            <p className="text-sm mb-4" style={{ color: "#444455" }}>
+              Lo que aparece en tu mapa merece ser mirado con un profesional. No hay respuesta incorrecta
+              — hay conversaciones que a veces necesitan un espacio seguro y con apoyo.
+            </p>
+            <a href="mailto:contacto@re-conociendonos.com"
+              className="inline-block px-5 py-2 rounded-xl text-sm font-semibold text-white"
+              style={{ background: "#9C6500" }}>
+              Hablar con un profesional →
+            </a>
+          </div>
+        )}
+
+        {/* Compartir */}
+        <div className="flex gap-3">
+          <button onClick={shareWhatsApp}
+            className="flex-1 py-3 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-90"
+            style={{ background: "#25D366" }}>
+            Compartir por WhatsApp
+          </button>
+        </div>
+
+        {/* ✨ MOMENTO DE UPGRADE — Invitar a la pareja */}
+        <div className="rounded-2xl p-8 text-center" style={{ background: "#EBF3FB", border: "2px solid #5B8DD9" }}>
+          <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: "#5B8DD9" }}>
+            El siguiente paso
+          </p>
+          <h3 className="text-xl font-bold mb-3" style={{ color: "#1A274A" }}>
+            ¿Te hace sentido vivir esta experiencia con tu pareja?
+          </h3>
+          <p className="text-sm mb-2" style={{ color: "#444455" }}>
+            Ver juntos el mapa completo — y descubrir dónde coinciden y dónde hay brechas.
+          </p>
+          {(estados.includes("ROJO") || estados.includes("AMARILLO")) && (
+            <p className="text-sm mb-4 font-medium" style={{ color: "#C0504D" }}>
+              Tu mapa muestra dimensiones que merecen ser conversadas con tu pareja.
+            </p>
+          )}
           <button
-            onClick={() => router.push("/")}
-            className="px-8 py-3 bg-slate-600 text-white rounded-lg font-medium hover:bg-slate-700 transition-colors"
-          >
-            Finalizar
+            onClick={() => router.push("/pareja")}
+            className="px-8 py-3 rounded-xl font-bold text-white transition-all hover:opacity-90"
+            style={{ background: "#5B8DD9" }}>
+            Invitar a mi pareja →
+          </button>
+        </div>
+
+        <div className="text-center pb-8">
+          <button onClick={() => router.push("/")}
+            className="text-sm px-6 py-3 rounded-xl" style={{ color: "#888" }}>
+            Volver al inicio
           </button>
         </div>
       </div>

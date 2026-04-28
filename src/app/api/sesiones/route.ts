@@ -49,5 +49,7 @@ export async function GET(request: NextRequest) {
   }
 
   console.log("GET /api/sesiones: sesion.respuestas:", JSON.stringify(sesion.respuestas));
-  return NextResponse.json({ sesion });
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { password_A, password_B, ...sesionSegura } = sesion;
+  return NextResponse.json({ sesion: sesionSegura });
 }

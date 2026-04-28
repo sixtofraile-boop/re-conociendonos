@@ -62,23 +62,38 @@ export default function EncuestaPareja() {
     setRespuestas(nuevas);
   };
 
+  // Garantiza que la pregunta actual tiene valores antes de avanzar
+  const getRespuestasCompletas = (resp: RespuestaPareja[], indice: number): RespuestaPareja[] => {
+    const completas = [...resp];
+    for (let i = 0; i <= indice; i++) {
+      if (!completas[i]) {
+        const p = PREGUNTAS_PAREJA[i];
+        completas[i] = { pregunta_id: p.id, dimension: p.dimension, hist_yo: 5, hist_par: 5, act_yo: 5, act_par: 5 };
+      }
+    }
+    return completas;
+  };
+
+  const guardarRespuestas = async (resp: RespuestaPareja[]) => {
+    if (!sessionId || resp.length === 0) return;
+    await fetch("/api/sesiones/respuestas", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ session_id: sessionId, persona, respuestas: resp }),
+    });
+  };
+
   const handleSiguiente = async () => {
+    const respCompletas = getRespuestasCompletas(respuestas, preguntaActual);
+    setRespuestas(respCompletas);
+
     if (preguntaActual < PREGUNTAS_PAREJA.length - 1) {
       setPreguntaActual(preguntaActual + 1);
+      guardarRespuestas(respCompletas).catch(console.error);
     } else {
       setSaving(true);
       try {
-        const res = await fetch("/api/sesiones/respuestas", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            session_id: sessionId,
-            persona: persona,
-            respuestas,
-          }),
-        });
-        if (!res.ok) throw new Error("Error guardando");
-        
+        await guardarRespuestas(respCompletas);
         if (persona === "A") {
           router.push("/pareja/resultados");
         } else {
@@ -148,8 +163,23 @@ export default function EncuestaPareja() {
   const progreso = ((preguntaActual + 1) / total) * 100;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white p-4 md:p-8">
-      <div className="max-w-2xl mx-auto">
+    <div className="min-h-screen" style={{ background: "#F8F8F8" }}>
+      {/* Código de sesión visible — solo persona A */}
+      {persona === "A" && sessionId && (
+        <div className="px-4 py-2 text-center text-xs" style={{ background: "#1A274A", color: "#88AACC" }}>
+          Código para tu pareja:{" "}
+          <span
+            className="font-mono font-bold cursor-pointer hover:opacity-80"
+            style={{ color: "#E8B850" }}
+            onClick={() => { navigator.clipboard.writeText(sessionId); }}
+            title="Clic para copiar"
+          >
+            {sessionId}
+          </span>
+          {" "}· clic para copiar
+        </div>
+      )}
+      <div className="max-w-2xl mx-auto p-4 md:p-8">
         <div className="mb-4">
           <div className="flex justify-between text-sm text-slate-500 mb-2">
             <span>Pregunta {preguntaActual + 1} de {total}</span>

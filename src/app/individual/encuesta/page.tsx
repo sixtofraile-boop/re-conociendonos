@@ -59,23 +59,37 @@ export default function EncuestaIndividual() {
     setRespuestas(nuevas);
   };
 
+  const getRespuestasCompletas = (resp: RespuestaIndividual[], indice: number): RespuestaIndividual[] => {
+    const completas = [...resp];
+    for (let i = 0; i <= indice; i++) {
+      if (!completas[i]) {
+        const p = PREGUNTAS_INDIVIDUAL[i];
+        completas[i] = { pregunta_id: p.id, dimension: p.dimension, hist_yo: 5, act_yo: 5, hist_par: "IGUAL", act_par: "IGUAL" };
+      }
+    }
+    return completas;
+  };
+
+  const guardarRespuestas = async (resp: RespuestaIndividual[]) => {
+    if (!sessionId || resp.length === 0) return;
+    await fetch("/api/sesiones/respuestas", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ session_id: sessionId, persona: "I", respuestas: resp }),
+    });
+  };
+
   const handleSiguiente = async () => {
+    const respCompletas = getRespuestasCompletas(respuestas, preguntaActual);
+    setRespuestas(respCompletas);
+
     if (preguntaActual < PREGUNTAS_INDIVIDUAL.length - 1) {
       setPreguntaActual(preguntaActual + 1);
+      guardarRespuestas(respCompletas).catch(console.error);
     } else {
       setSaving(true);
       try {
-        const res = await fetch("/api/sesiones/respuestas", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            session_id: sessionId,
-            persona: "I",
-            respuestas,
-          }),
-        });
-        if (!res.ok) throw new Error("Error guardando");
-        
+        await guardarRespuestas(respCompletas);
         router.push("/individual/resultados");
       } catch (e) {
         console.error(e);

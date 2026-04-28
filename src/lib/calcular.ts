@@ -279,8 +279,8 @@ export function calcularResultadosIndividualPareja(
   for (const dim of dimensiones) {
     const pregDim = map[dim];
     
-    const yo_hist = pregDim.length ? pregDim.reduce((acc, r) => acc + r.hist_yo, 0) / pregDim.length : 0;
-    const yo_act = pregDim.length ? pregDim.reduce((acc, r) => acc + r.act_yo, 0) / pregDim.length : 0;
+    const yo_hist = pregDim.length ? pregDim.reduce((acc, r) => acc + r.hist_yo * 10, 0) / pregDim.length : 0;
+    const yo_act = pregDim.length ? pregDim.reduce((acc, r) => acc + r.act_yo * 10, 0) / pregDim.length : 0;
     const variacion = yo_act - yo_hist;
     
     const nivel_act = yo_act;

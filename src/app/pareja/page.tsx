@@ -2,30 +2,29 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function ParejaPage() {
   const router = useRouter();
+  const [nombre, setNombre] = useState("");
   const [email, setEmail] = useState("");
+  const [whatsapp, setWhatsapp] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isJoin, setIsJoin] = useState(false);
   const [sessionCode, setSessionCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
-  const validatePassword = (pwd: string) => {
-    if (pwd.length < 6) return "La contraseña debe tener al menos 6 caracteres";
-    return null;
-  };
+  const [codigoCreado, setCodigoCreado] = useState<string | null>(null);
+  const [copiado, setCopiado] = useState(false);
 
   const handleCreate = async () => {
-    if (!email || !password) {
-      setError("Por favor completa todos los campos");
+    if (!nombre || !email || !password) {
+      setError("Nombre, email y contraseña son obligatorios");
       return;
     }
-    const pwdError = validatePassword(password);
-    if (pwdError) {
-      setError(pwdError);
+    if (password.length < 6) {
+      setError("La contraseña debe tener al menos 6 caracteres");
       return;
     }
     if (password !== confirmPassword) {
@@ -43,10 +42,11 @@ export default function ParejaPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Error al crear sesión");
-      
+
       document.cookie = `session_id=${data.sesion.id}; path=/; max-age=2592000`;
       document.cookie = `persona=A; path=/; max-age=2592000`;
-      router.push("/pareja/encuesta");
+      document.cookie = `nombre=${encodeURIComponent(nombre)}; path=/; max-age=2592000`;
+      setCodigoCreado(data.sesion.id);
     } catch (e: any) {
       setError(e.message);
     } finally {
@@ -55,8 +55,8 @@ export default function ParejaPage() {
   };
 
   const handleJoin = async () => {
-    if (!sessionCode || !email || !password) {
-      setError("Por favor completa todos los campos");
+    if (!sessionCode || !nombre || !email || !password) {
+      setError("Todos los campos obligatorios deben completarse");
       return;
     }
     setLoading(true);
@@ -70,9 +70,11 @@ export default function ParejaPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Error al unirse");
-      
+
       document.cookie = `session_id=${data.sesion.id}; path=/; max-age=2592000`;
       document.cookie = `persona=B; path=/; max-age=2592000`;
+      document.cookie = `nombre=${encodeURIComponent(nombre)}; path=/; max-age=2592000`;
+
       if (data.sesion.respuestas?.A) {
         router.push("/pareja/resultados");
       } else {
@@ -85,111 +87,253 @@ export default function ParejaPage() {
     }
   };
 
+  const copiarCodigo = () => {
+    if (!codigoCreado) return;
+    navigator.clipboard.writeText(codigoCreado);
+    setCopiado(true);
+    setTimeout(() => setCopiado(false), 2000);
+  };
+
+  const compartirWhatsApp = () => {
+    if (!codigoCreado) return;
+    const url = `${window.location.origin}/pareja`;
+    const msg = `Hola 💙\n\nHice un test sobre nuestra relación y me hizo pensar bastante. Me gustaría que lo hiciéramos juntos para ver nuestro mapa completo.\n\n→ Entra aquí: ${url}\n→ Selecciona "Unirse a sesión"\n→ Usa este código: *${codigoCreado}*\n\nRE-CONOCIÉNDONOS`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`);
+  };
+
+  // ── Pantalla: código de sesión creado ─────────────────────────────────────
+  if (codigoCreado) {
+    return (
+      <div className="min-h-screen" style={{ background: "#F8F8F8" }}>
+        <div style={{ background: "#1A274A" }} className="px-6 py-8">
+          <div className="max-w-md mx-auto">
+            <p className="text-xs font-semibold tracking-widest uppercase mb-2" style={{ color: "#E8B850" }}>SESIÓN CREADA</p>
+            <h1 className="text-2xl font-bold text-white">Comparte este código con tu pareja</h1>
+          </div>
+        </div>
+
+        <div className="max-w-md mx-auto px-6 py-8 space-y-4">
+          {/* Código */}
+          <div className="bg-white rounded-2xl p-6 shadow-sm text-center">
+            <p className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: "#888" }}>
+              Código de sesión
+            </p>
+            <div className="px-4 py-4 rounded-xl mb-4 font-mono text-lg font-bold tracking-wider break-all"
+              style={{ background: "#F0F2F5", color: "#1A274A" }}>
+              {codigoCreado}
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={copiarCodigo}
+                className="flex-1 py-3 rounded-xl text-sm font-semibold transition-all"
+                style={copiado
+                  ? { background: "#C6EFCE", color: "#276221" }
+                  : { background: "#1A274A", color: "#fff" }}
+              >
+                {copiado ? "¡Copiado!" : "Copiar código"}
+              </button>
+              <button
+                onClick={compartirWhatsApp}
+                className="flex-1 py-3 rounded-xl text-sm font-semibold text-white"
+                style={{ background: "#25D366" }}
+              >
+                Enviar por WhatsApp
+              </button>
+            </div>
+          </div>
+
+          {/* Instrucciones para la pareja */}
+          <div className="rounded-2xl p-5" style={{ background: "#EBF3FB" }}>
+            <p className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: "#5B8DD9" }}>
+              Instrucciones para tu pareja
+            </p>
+            <ol className="space-y-2 text-sm" style={{ color: "#2C3E6B" }}>
+              <li className="flex gap-2"><span className="font-bold">1.</span> Entra a <strong>re-conociendonos.app</strong> → Versión Pareja</li>
+              <li className="flex gap-2"><span className="font-bold">2.</span> Selecciona "Unirse a sesión"</li>
+              <li className="flex gap-2"><span className="font-bold">3.</span> Ingresa el código de arriba</li>
+              <li className="flex gap-2"><span className="font-bold">4.</span> Responde las preguntas por separado</li>
+              <li className="flex gap-2"><span className="font-bold">5.</span> Cuando los dos terminen, revelan el mapa juntos</li>
+            </ol>
+          </div>
+
+          <button
+            onClick={() => router.push("/pareja/encuesta")}
+            className="w-full py-4 rounded-xl font-bold text-white transition-all hover:opacity-90"
+            style={{ background: "#5B8DD9" }}
+          >
+            Ir a mi encuesta →
+          </button>
+
+          <p className="text-xs text-center" style={{ color: "#888" }}>
+            Guarda el código — lo necesitarás para que tu pareja se una.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-      <div className="max-w-md mx-auto px-6 py-12">
-        <button onClick={() => router.push("/")} className="text-slate-500 hover:text-slate-700 mb-8">
-          ← Volver
-        </button>
+    <div className="min-h-screen" style={{ background: "#F8F8F8" }}>
 
-        <h1 className="text-3xl font-bold text-slate-800 mb-2">Versión Pareja</h1>
-        <p className="text-slate-600 mb-8">Dos mapas que al unirse revelan la verdad de la relación</p>
+      {/* Header */}
+      <div style={{ background: "#1A274A" }} className="px-6 py-8">
+        <div className="max-w-md mx-auto">
+          <Link href="/" className="text-sm flex items-center gap-1 mb-6" style={{ color: "#88AACC" }}>
+            ← Volver
+          </Link>
+          <p className="text-xs font-semibold tracking-widest uppercase mb-2" style={{ color: "#E8B850" }}>
+            VERSIÓN PAREJA
+          </p>
+          <h1 className="text-3xl font-bold text-white mb-2">Dos mapas, una verdad</h1>
+          <p style={{ color: "#B8CCEE" }} className="text-sm">
+            Cada uno responde por separado · Luego revelan juntos el mapa completo
+          </p>
+        </div>
+      </div>
 
-        {!isJoin ? (
+      {/* Form */}
+      <div className="max-w-md mx-auto px-6 py-10">
+        <div className="bg-white rounded-2xl p-8 shadow-sm">
+
+          {/* Toggle crear / unirse */}
+          <div className="flex rounded-xl overflow-hidden border mb-6" style={{ borderColor: "#CCCCCC" }}>
+            <button
+              onClick={() => { setIsJoin(false); setError(""); }}
+              className="flex-1 py-2.5 text-sm font-semibold transition-all"
+              style={!isJoin ? { background: "#1A274A", color: "#fff" } : { background: "#fff", color: "#444455" }}
+            >
+              Crear sesión
+            </button>
+            <button
+              onClick={() => { setIsJoin(true); setError(""); }}
+              className="flex-1 py-2.5 text-sm font-semibold transition-all"
+              style={isJoin ? { background: "#1A274A", color: "#fff" } : { background: "#fff", color: "#444455" }}
+            >
+              Unirse a sesión
+            </button>
+          </div>
+
           <div className="space-y-4">
+            {isJoin && (
+              <div>
+                <label className="block text-sm font-medium mb-1" style={{ color: "#444455" }}>
+                  Código de sesión <span style={{ color: "#C0504D" }}>*</span>
+                </label>
+                <input
+                  type="text"
+                  value={sessionCode}
+                  onChange={(e) => setSessionCode(e.target.value)}
+                  className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 text-sm"
+                  style={{ borderColor: "#CCCCCC", color: "#1A274A" }}
+                  placeholder="ID de la sesión (te lo compartió tu pareja)"
+                />
+              </div>
+            )}
+
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Tu email</label>
+              <label className="block text-sm font-medium mb-1" style={{ color: "#444455" }}>
+                Tu nombre <span style={{ color: "#C0504D" }}>*</span>
+              </label>
+              <input
+                type="text"
+                value={nombre}
+                onChange={(e) => setNombre(e.target.value)}
+                className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 text-sm"
+                style={{ borderColor: "#CCCCCC", color: "#1A274A" }}
+                placeholder="¿Cómo te llamas?"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-1" style={{ color: "#444455" }}>
+                Correo electrónico <span style={{ color: "#C0504D" }}>*</span>
+              </label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 text-sm"
+                style={{ borderColor: "#CCCCCC", color: "#1A274A" }}
                 placeholder="tu@email.com"
               />
             </div>
+
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Crear contraseña</label>
+              <label className="block text-sm font-medium mb-1" style={{ color: "#444455" }}>
+                WhatsApp <span className="font-normal" style={{ color: "#888" }}>(opcional)</span>
+              </label>
+              <input
+                type="tel"
+                value={whatsapp}
+                onChange={(e) => setWhatsapp(e.target.value)}
+                className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 text-sm"
+                style={{ borderColor: "#CCCCCC", color: "#1A274A" }}
+                placeholder="+56 9 XXXX XXXX"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-1" style={{ color: "#444455" }}>
+                Contraseña <span style={{ color: "#C0504D" }}>*</span>
+              </label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 text-sm"
+                style={{ borderColor: "#CCCCCC", color: "#1A274A" }}
                 placeholder="Mínimo 6 caracteres"
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Confirmar contraseña</label>
-              <input
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Repite tu contraseña"
-              />
-            </div>
-            {error && <p className="text-red-500 text-sm">{error}</p>}
+
+            {!isJoin && (
+              <div>
+                <label className="block text-sm font-medium mb-1" style={{ color: "#444455" }}>
+                  Confirmar contraseña <span style={{ color: "#C0504D" }}>*</span>
+                </label>
+                <input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 text-sm"
+                  style={{ borderColor: "#CCCCCC", color: "#1A274A" }}
+                  placeholder="Repite tu contraseña"
+                />
+              </div>
+            )}
+
+            {error && (
+              <p className="text-sm px-3 py-2 rounded-lg" style={{ background: "#FFC7CE", color: "#9C0006" }}>
+                {error}
+              </p>
+            )}
+
             <button
-              onClick={handleCreate}
+              onClick={isJoin ? handleJoin : handleCreate}
               disabled={loading}
-              className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50"
+              className="w-full py-3 rounded-xl font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50"
+              style={{ background: "#5B8DD9" }}
             >
-              {loading ? "Creando..." : "Crear nueva sesión"}
+              {loading ? "..." : isJoin ? "Unirse a la sesión →" : "Crear mi sesión →"}
             </button>
-            <p className="text-center text-slate-500 text-sm">
-              o{" "}
-              <button onClick={() => setIsJoin(true)} className="text-blue-600 hover:underline">
-                unirse a una sesión existente
-              </button>
-            </p>
           </div>
-        ) : (
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Código de sesión</label>
-              <input
-                type="text"
-                value={sessionCode}
-                onChange={(e) => setSessionCode(e.target.value)}
-                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="ID de la sesión"
-              />
+
+          {!isJoin && (
+            <div className="mt-6 p-4 rounded-xl text-sm" style={{ background: "#EBF3FB", color: "#2C3E6B" }}>
+              <p className="font-semibold mb-1">¿Cómo funciona?</p>
+              <ol className="space-y-1 text-xs list-decimal list-inside" style={{ color: "#444455" }}>
+                <li>Tú creas la sesión y respondes las 23 preguntas</li>
+                <li>Compartes el código de sesión con tu pareja</li>
+                <li>Tu pareja se une y responde por separado</li>
+                <li>Cuando los dos terminan, revelan juntos el mapa</li>
+              </ol>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Tu email</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="tu@email.com"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Tu contraseña</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="••••••••"
-              />
-            </div>
-            {error && <p className="text-red-500 text-sm">{error}</p>}
-            <button
-              onClick={handleJoin}
-              disabled={loading}
-              className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50"
-            >
-              {loading ? "Uniéndose..." : "Unirse a la sesión"}
-            </button>
-            <p className="text-center text-slate-500 text-sm">
-              o{" "}
-              <button onClick={() => setIsJoin(false)} className="text-blue-600 hover:underline">
-                crear una nueva sesión
-              </button>
-            </p>
-          </div>
-        )}
+          )}
+
+          <p className="text-xs text-center mt-4" style={{ color: "#888" }}>
+            Al continuar aceptas los términos de privacidad.
+          </p>
+        </div>
       </div>
     </div>
   );

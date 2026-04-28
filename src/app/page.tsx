@@ -1,58 +1,191 @@
 import Link from "next/link";
-import { Suspense } from "react";
+
+const DIMENSIONES = [
+  { nombre: "AMISTAD",    color: "#5B8DD9", sintesis: "La amistad te conecta.",       desc: "Base emocional. Confianza, complicidad, libertad de ser uno mismo." },
+  { nombre: "DESEO",      color: "#C0504D", sintesis: "El deseo te enciende.",         desc: "Energía vital que diferencia a la pareja de cualquier otra relación." },
+  { nombre: "PROYECTO",   color: "#6B9B3E", sintesis: "El proyecto te orienta.",       desc: "El \"para qué estamos juntos\". Dirección compartida y sentido de futuro." },
+  { nombre: "COMPROMISO", color: "#8064A2", sintesis: "El compromiso lo sostiene todo.", desc: "Capacidad de sostener en el tiempo lo que se declara importante." },
+];
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-      <div className="max-w-4xl mx-auto px-6 py-16">
-        <header className="text-center mb-16">
-          <h1 className="text-5xl font-bold text-slate-800 mb-4">RE-CONOCIÉNDOS</h1>
-          <p className="text-xl text-slate-600 mb-2">Las 4 dimensiones de una pareja</p>
-          <p className="text-slate-500">y las preguntas que nos faltan</p>
-        </header>
+    <div className="min-h-screen" style={{ background: "#F8F8F8" }}>
 
-        <main className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
-          <Link href="/pareja" className="group">
-            <div className="bg-white rounded-2xl p-8 shadow-lg border-2 border-transparent hover:border-blue-400 transition-all duration-300 text-center h-full flex flex-col justify-between min-h-[280px]">
-              <div>
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                  </svg>
-                </div>
-                <h2 className="text-2xl font-semibold text-slate-800 mb-2">Versión Pareja</h2>
-                <p className="text-slate-600 mb-4">Para dos personas que quieren conocerse y entenderse juntos</p>
+      {/* HERO */}
+      <section style={{ background: "#1A274A" }} className="px-6 py-20 md:py-28">
+        <div className="max-w-3xl mx-auto text-center">
+          <p className="text-xs font-semibold tracking-widest uppercase mb-4" style={{ color: "#E8B850" }}>
+            RE-CONOCIÉNDONOS
+          </p>
+          <h1 className="text-4xl md:text-5xl font-bold text-white leading-tight mb-6">
+            Hay conversaciones que tu relación necesita tener.
+          </h1>
+          <p className="text-xl md:text-2xl font-light mb-3" style={{ color: "#B8CCEE" }}>
+            Este es el mapa para encontrarlas.
+          </p>
+          <p className="mb-10 text-sm" style={{ color: "#88AACC" }}>
+            Las 4 dimensiones de una pareja · Las preguntas que nos faltan
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link
+              href="/individual"
+              className="px-8 py-4 rounded-xl font-semibold text-white transition-all hover:opacity-90"
+              style={{ background: "#028090" }}
+            >
+              Empieza tu test gratuito →
+            </Link>
+            <Link
+              href="/pareja"
+              className="px-8 py-4 rounded-xl font-semibold transition-all hover:opacity-90"
+              style={{ background: "rgba(255,255,255,0.1)", color: "#fff", border: "1px solid rgba(255,255,255,0.25)" }}
+            >
+              Versión Pareja
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* QUÉ ES / NO ES */}
+      <section className="px-6 py-16" style={{ background: "#fff" }}>
+        <div className="max-w-3xl mx-auto text-center">
+          <p className="text-xs font-semibold tracking-widest uppercase mb-4" style={{ color: "#028090" }}>
+            No diagnostica — genera conciencia
+          </p>
+          <h2 className="text-2xl md:text-3xl font-bold mb-6" style={{ color: "#1A274A" }}>
+            Un espejo, no un juicio
+          </h2>
+          <p className="text-lg leading-relaxed mb-8" style={{ color: "#444455" }}>
+            RE-CONOCIÉNDONOS no te dice qué está mal en tu relación.<br/>
+            Te ayuda a poner en palabras lo que ya sentías — y a abrirle la puerta a las conversaciones que faltan.
+          </p>
+          <div className="grid md:grid-cols-3 gap-6 text-left mt-10">
+            {[
+              { icon: "✓", label: "Genera conciencia y lenguaje compartido" },
+              { icon: "✓", label: "Revela brechas entre las dos miradas" },
+              { icon: "✓", label: "Abre conversaciones, no veredictos" },
+            ].map((item) => (
+              <div key={item.label} className="flex items-start gap-3 p-4 rounded-xl" style={{ background: "#F0F2F5" }}>
+                <span className="font-bold text-lg mt-0.5" style={{ color: "#028090" }}>{item.icon}</span>
+                <p className="text-sm font-medium" style={{ color: "#1A274A" }}>{item.label}</p>
               </div>
-              <span className="inline-block bg-blue-600 text-white px-6 py-2 rounded-full font-medium group-hover:bg-blue-700 transition-colors">
-                Comenzar
-              </span>
-            </div>
-          </Link>
+            ))}
+          </div>
+        </div>
+      </section>
 
-          <Link href="/individual" className="group">
-            <div className="bg-white rounded-2xl p-8 shadow-lg border-2 border-transparent hover:border-purple-400 transition-all duration-300 text-center h-full flex flex-col justify-between min-h-[280px]">
-              <div>
-                <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                  </svg>
+      {/* LAS 4 DIMENSIONES */}
+      <section className="px-6 py-16" style={{ background: "#F8F8F8" }}>
+        <div className="max-w-3xl mx-auto">
+          <div className="text-center mb-12">
+            <p className="text-xs font-semibold tracking-widest uppercase mb-3" style={{ color: "#E8B850" }}>
+              Las 4 dimensiones
+            </p>
+            <h2 className="text-2xl md:text-3xl font-bold" style={{ color: "#1A274A" }}>
+              Toda relación se sostiene sobre cuatro pilares
+            </h2>
+          </div>
+          <div className="grid md:grid-cols-2 gap-5">
+            {DIMENSIONES.map((dim) => (
+              <div
+                key={dim.nombre}
+                className="rounded-2xl p-6 flex gap-4"
+                style={{ background: "#fff", borderLeft: `4px solid ${dim.color}` }}
+              >
+                <div
+                  className="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center text-white font-bold text-sm"
+                  style={{ background: dim.color }}
+                >
+                  {dim.nombre[0]}
                 </div>
-                <h2 className="text-2xl font-semibold text-slate-800 mb-2">Mi Mirada</h2>
-                <p className="text-slate-600 mb-4">Versión individual para reflexión personal</p>
+                <div>
+                  <h3 className="font-bold mb-1" style={{ color: "#1A274A" }}>{dim.nombre}</h3>
+                  <p className="text-xs font-semibold mb-2" style={{ color: dim.color }}>{dim.sintesis}</p>
+                  <p className="text-sm" style={{ color: "#444455" }}>{dim.desc}</p>
+                </div>
               </div>
-              <span className="inline-block bg-purple-600 text-white px-6 py-2 rounded-full font-medium group-hover:bg-purple-700 transition-colors">
-                Comenzar
-              </span>
-            </div>
-          </Link>
-        </main>
+            ))}
+          </div>
+        </div>
+      </section>
 
-        <footer className="mt-16 text-center text-slate-400 text-sm">
-          <p>Esta herramienta no es un diagnóstico clínico.</p>
-          <p>Es un espejo para generar conversación y conciencia.</p>
-        </footer>
-      </div>
+      {/* DOS CAMINOS */}
+      <section className="px-6 py-16" style={{ background: "#fff" }}>
+        <div className="max-w-3xl mx-auto">
+          <div className="text-center mb-12">
+            <p className="text-xs font-semibold tracking-widest uppercase mb-3" style={{ color: "#E8B850" }}>
+              Elige tu camino
+            </p>
+            <h2 className="text-2xl md:text-3xl font-bold" style={{ color: "#1A274A" }}>
+              Dos versiones, una experiencia
+            </h2>
+          </div>
+          <div className="grid md:grid-cols-2 gap-6">
+
+            {/* Individual */}
+            <div className="rounded-2xl p-8 flex flex-col" style={{ background: "#F0F2F5", border: "2px solid #028090" }}>
+              <div className="mb-4">
+                <span className="text-xs font-semibold px-3 py-1 rounded-full text-white" style={{ background: "#028090" }}>
+                  GRATUITO · Paso 1
+                </span>
+              </div>
+              <h3 className="text-xl font-bold mb-2" style={{ color: "#1A274A" }}>MI MIRADA</h3>
+              <p className="text-sm mb-4" style={{ color: "#444455" }}>
+                Reflexión personal. 22 preguntas. Tú respondes sobre ti y cómo percibes a tu pareja.
+                Obtienes tu mapa personal antes de compartir nada.
+              </p>
+              <ul className="space-y-2 mb-6 text-sm" style={{ color: "#444455" }}>
+                <li className="flex gap-2"><span style={{ color: "#028090" }}>→</span> 8-10 minutos</li>
+                <li className="flex gap-2"><span style={{ color: "#028090" }}>→</span> Resultado online inmediato</li>
+                <li className="flex gap-2"><span style={{ color: "#028090" }}>→</span> Mapa de las 4 dimensiones</li>
+                <li className="flex gap-2"><span style={{ color: "#028090" }}>→</span> Puerta de entrada a la versión pareja</li>
+              </ul>
+              <Link
+                href="/individual"
+                className="mt-auto text-center px-6 py-3 rounded-xl font-semibold text-white transition-all hover:opacity-90"
+                style={{ background: "#028090" }}
+              >
+                Comenzar test gratuito →
+              </Link>
+            </div>
+
+            {/* Pareja */}
+            <div className="rounded-2xl p-8 flex flex-col" style={{ background: "#EBF3FB", border: "2px solid #5B8DD9" }}>
+              <div className="mb-4">
+                <span className="text-xs font-semibold px-3 py-1 rounded-full text-white" style={{ background: "#5B8DD9" }}>
+                  VERSIÓN COMPLETA
+                </span>
+              </div>
+              <h3 className="text-xl font-bold mb-2" style={{ color: "#1A274A" }}>VERSIÓN PAREJA</h3>
+              <p className="text-sm mb-4" style={{ color: "#444455" }}>
+                A y B responden por separado. Luego revelan juntos el mapa conjunto — y ven dónde coinciden y dónde hay brechas.
+              </p>
+              <ul className="space-y-2 mb-6 text-sm" style={{ color: "#444455" }}>
+                <li className="flex gap-2"><span style={{ color: "#5B8DD9" }}>→</span> 23 preguntas por persona</li>
+                <li className="flex gap-2"><span style={{ color: "#5B8DD9" }}>→</span> Mapa individual + mapa conjunto</li>
+                <li className="flex gap-2"><span style={{ color: "#5B8DD9" }}>→</span> Semáforo + prioridades + brechas</li>
+                <li className="flex gap-2"><span style={{ color: "#5B8DD9" }}>→</span> Preguntas de conversación por dimensión</li>
+              </ul>
+              <Link
+                href="/pareja"
+                className="mt-auto text-center px-6 py-3 rounded-xl font-semibold text-white transition-all hover:opacity-90"
+                style={{ background: "#5B8DD9" }}
+              >
+                Iniciar versión pareja →
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer className="px-6 py-12 text-center" style={{ background: "#1A274A" }}>
+        <p className="font-semibold mb-2" style={{ color: "#E8B850" }}>RE-CONOCIÉNDONOS</p>
+        <p className="text-sm" style={{ color: "#88AACC" }}>
+          Esta herramienta no es un diagnóstico clínico.<br />
+          Es un espejo para generar conversación y conciencia.
+        </p>
+      </footer>
+
     </div>
   );
 }
