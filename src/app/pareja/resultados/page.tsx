@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { calcularResultadosPareja } from "@/lib/calcular";
+import { calcularResultadosIndividualPareja } from "@/lib/calcular";
 import { PREGUNTAS_PAREJA, FRASES_GATILLO_PAREJA, COLOR_DIMENSION, COLOR_ESTADO } from "@/lib/preguntas";
 import { ResultadoGlobal, ResultadoDimension, Estado } from "@/lib/types";
 
