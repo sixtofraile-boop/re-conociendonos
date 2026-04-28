@@ -49,14 +49,14 @@ export default function EncuestaPareja() {
   const handleRespuesta = (campo: string, valor: number) => {
     const nuevas = [...respuestas];
     if (!nuevas[preguntaActual]) {
-      nuevas[preguntaActual] = {
-        pregunta_id: pregunta.id,
-        dimension: pregunta.dimension,
-        hist_yo: 5,
-        hist_par: 5,
-        act_yo: 5,
-        act_par: 5,
-      };
+       nuevas[preguntaActual] = {
+         pregunta_id: pregunta.id,
+         dimension: pregunta.dimension,
+         hist_yo: 5,
+         hist_par: 5,
+         act_yo: 5,
+         act_par: 5,
+       };
     }
     nuevas[preguntaActual] = { ...nuevas[preguntaActual], [campo]: valor } as RespuestaPareja;
     setRespuestas(nuevas);
@@ -175,19 +175,19 @@ export default function EncuestaPareja() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <p className="text-xs text-slate-500 mb-2">Histórico (a lo largo de la relación)</p>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="range"
-                      min="1"
-                      max="10"
-                      value={currentResp[seccion.key as keyof typeof currentResp] as number}
-                      onChange={(e) => handleRespuesta(seccion.key, parseInt(e.target.value))}
-                      className="flex-1 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer"
-                    />
-                    <span className="w-8 text-center font-medium text-slate-700">
-                      {currentResp[seccion.key as keyof typeof currentResp] as number}
-                    </span>
-                  </div>
+               <div className="flex items-center gap-2">
+                     <input
+                       type="range"
+                       min="1"
+                       max="10"
+                       value={currentResp[seccion.key as keyof typeof currentResp] as number}
+                       onChange={(e) => handleRespuesta(seccion.key, parseInt(e.target.value))}
+                       className="flex-1 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer"
+                     />
+                     <span className="w-8 text-center font-medium text-slate-700">
+                       {currentResp[seccion.key as keyof typeof currentResp] as number}
+                     </span>
+                   </div>
                 </div>
                 <div>
                   <p className="text-xs text-slate-500 mb-2">Hoy</p>

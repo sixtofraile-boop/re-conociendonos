@@ -46,14 +46,14 @@ export default function EncuestaIndividual() {
   const handleRespuesta = (campo: string, valor: number | string) => {
     const nuevas = [...respuestas];
     if (!nuevas[preguntaActual]) {
-      nuevas[preguntaActual] = {
-        pregunta_id: pregunta.id,
-        dimension: pregunta.dimension,
-        hist_yo: 5,
-        act_yo: 5,
-        hist_par: "IGUAL",
-        act_par: "IGUAL",
-      };
+       nuevas[preguntaActual] = {
+         pregunta_id: pregunta.id,
+         dimension: pregunta.dimension,
+         hist_yo: 5,
+         act_yo: 5,
+         hist_par: "IGUAL",
+         act_par: "IGUAL",
+       };
     }
     nuevas[preguntaActual] = { ...nuevas[preguntaActual], [campo]: valor } as RespuestaIndividual;
     setRespuestas(nuevas);
@@ -115,7 +115,7 @@ export default function EncuestaIndividual() {
             <div className="bg-purple-50 p-4 rounded-lg mt-4">
               <p className="font-medium text-purple-800 mb-2">Cómo responder:</p>
               <ul className="list-disc list-inside space-y-1 text-purple-700">
-                <li>Para cada pregunta hay DOS respuestas: Tu nota (1 al 10) y cómo crees que respondería tu pareja (Más alto / Igual / Más bajo)</li>
+                <li>Para cada pregunta hay DOS respuestas: Tu nota (1 al 7) y cómo crees que respondería tu pareja (Más alto / Igual / Más bajo)</li>
                 <li>No lo pienses demasiado — la primera respuesta suele ser la más honesta.</li>
                 <li>Las preguntas están mezcladas — los resultados mostrarán el mapa por dimensión.</li>
               </ul>

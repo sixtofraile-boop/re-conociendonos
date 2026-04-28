@@ -1,147 +1,114 @@
-# RE-CONOCIÉNDOS - Progreso de Desarrollo
+# RE-CONOCIÉNDOS - Estado del Proyecto
 
-## Estado: En desarrollo (MVP funcional)
+## Estado: Listo para Deploy en Vercel
 
 ## Stack Tecnológico
 - **Frontend**: Next.js 16.2.4 (App Router) + TypeScript + Tailwind CSS
 - **Backend**: Next.js API Routes
-- **Base de datos**: SQLite con Prisma 7.8 + adapter libsql
+- **Base de datos**: PostgreSQL (Neon - gratis)
 - **Autenticación**: Cookies simples (session_id, persona)
 
 ---
 
-## Estructura del Proyecto
+## Archivos del Proyecto
 ```
 re-conociendonos-app/
 ├── prisma/
-│   ├── schema.prisma
-│   └── dev.db (SQLite)
+│   ├── schema.prisma          # Schema para PostgreSQL
+│   └── dev.db                 # Base SQLite local (no usar en producción)
 ├── src/
 │   ├── app/
-│   │   ├── page.tsx                    # Landing - selección versión
+│   │   ├── page.tsx                    # Landing
 │   │   ├── pareja/                     # Versión Pareja
 │   │   │   ├── page.tsx                # Inicio/create/join sesión
-│   │   │   ├── encuesta/page.tsx       # 23 preguntas (hist + act)
-│   │   │   ├── resultados/page.tsx     # Mi resultado individual
-│   │   │   └── mapa/page.tsx           # Mapa conjunto (reveal)
+│   │   │   ├── encuesta/page.tsx       # 23 preguntas
+│   │   │   ├── resultados/page.tsx     # Mi resultado
+│   │   │   └── mapa/page.tsx           # Mapa conjunto
 │   │   ├── individual/                  # Versión Individual
-│   │   │   ├── page.tsx                # Inicio sesión
-│   │   │   ├── encuesta/page.tsx       # 22 preguntas
-│   │   │   └── resultados/page.tsx     # Resultados + reflexiones
+│   │   │   ├── page.tsx
+│   │   │   ├── encuesta/page.tsx
+│   │   │   └── resultados/page.tsx
 │   │   └── api/sesiones/
-│   │       ├── route.ts                # GET/POST sesiones
-│   │       ├── join/route.ts           # Unirse a sesión
-│   │       ├── respuestas/route.ts     # Guardar respuestas
-│   │       └── hipotesis/route.ts       # Guardar hipótesis
+│   │       ├── route.ts
+│   │       ├── join/route.ts
+│   │       ├── respuestas/route.ts
+│   │       └── hipotesis/route.ts
 │   └── lib/
-│       ├── types.ts                    # TypeScript interfaces
-│       ├── preguntas.ts                # Preguntas, frases, catálogos
-│       ├── calcular.ts                 # Lógica de cálculo
-│       └── prisma.ts                   # Conexión DB
-├── SPEC.md                             # Especificación técnica
+│       ├── types.ts
+│       ├── preguntas.ts
+│       ├── calcular.ts
+│       └── prisma.ts              # Configurado para Neon PostgreSQL
+├── vercel.json
+├── .env.example
+├── PROGRESO.md
 └── package.json
 ```
 
 ---
 
-## Funcionalidades Implementadas
+## Funcionalidades Implementadas (100%)
 
-### Versión Pareja (Completo)
-- [x] Crear sesión (email + password)
-- [x] Unirse a sesión existente
-- [x] 23 preguntas con estructura:
-  - hist_yo (1-10)
-  - hist_pareja (1-10)
-  - act_yo (1-10)
-  - act_pareja (1-10)
-- [x] Introducción antes de empezar
-- [x] Barra de progreso
-- [x] Persistencia en DB
-- [x] Resultados individuales (mi mapa)
-- [x] Hipótesis antes del reveal
-- [x] Mapa conjunto con:
-  - Tabla comparativa A/B/Sistema
-  - Brechas y variaciones
-  - Semáforo (rojo/amarillo/verde)
-  - Frases gatillo por dimensión
-  - Focos de atención
-  - Preguntas de conversación
+### Versión Pareja ✓
+- Crear sesión con email + contraseña
+- Unirse a sesión existente
+- 23 preguntas con doble respuesta
+- Introducción antes de empezar
+- Barra de progreso
+- Persistencia en base de datos
+- Resultados individuales
+- Hipótesis antes del reveal
+- Mapa conjunto completo
 
-### Versión Individual (Completo)
-- [x] Crear sesión
-- [x] 22 preguntas con estructura:
-  - hist_yo / act_yo (1-10)
-  - hist_par / act_par (dropdown: Más alto/Igual/Más bajo)
-- [x] Resultados con:
-  - Resumen global
-  - Por dimensión (hist%, act%, variación)
-  - Percepción de la pareja
-  - Semáforo
-  - Reflexiones (para ROJO/AMARILLO)
-  - Mensaje de cierre dinámico
+### Versión Individual ✓
+- Crear sesión
+- 22 preguntas con percepción de pareja
+- Resultados con reflexiones personalizadas
+- Mensaje de cierre dinámico
 
-### Lógica de Cálculo (Completo)
-- [x] Conversión escala 1-10 → porcentaje
-- [x] Nivel histórico y actual
-- [x] Variación (actual - histórico)
-- [x] Brecha entre parejas
-- [x] Congruencia de trayectorias
-- [x] Puntaje de urgencia
-- [x] Ranking por dimensión
-- [x] Semáforo (ROJO/AMARILLO/VERDE)
-- [x] Zonas (crítica/sensible/atención/sólida)
-- [x] Criterios de texto dinámico
-- [x] Mensaje de cierre para versión individual
+### Lógica de Cálculo ✓
+- Porcentajes, variaciones, brechas
+- Semáforo (ROJO/AMARILLO/VERDE)
+- Ranking de urgencia
+- Frases gatillo
+- Preguntas de conversación y reflexión
 
 ---
 
-## Catálogos Implementados
-- [x] 23 preguntas versión pareja
-- [x] 22 preguntas versión individual
-- [x] Frases gatillo pareja (4 dims × 3 estados)
-- [x] Frases gatillo individual (4 dims × 3 estados)
-- [x] Preguntas de conversación (6 por dimensión)
-- [x] Preguntas de reflexión (5 por dimensión)
-- [x] Colores por dimensión:
-  - AMISTAD: #5B8DD9
-  - DESEO: #C0504D
-  - PROYECTO: #6B9B3E
-  - COMPROMISO: #8064A2
+## Base de Datos Neon (Configurada)
+
+**Connection String:**
+```
+postgresql://neondb_owner:npg_u1HCAwK0bRjM@ep-silent-thunder-amlablv4-pooler.c-5.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
+```
 
 ---
 
-## Pendiente / Mejoras Futuras
-- [ ] Autenticación más robusta (JWT)
-- [ ] Envío de email para invitar pareja B
-- [ ] Recuperar contraseña
-- [ ] Dashboard admin para profesionales
-- [ ] Historial de sesiones
-- [ ] Exportar resultados PDF
-- [ ] Integración con profesionales (derivación)
-- [ ] Deploy a producción (Vercel + PostgreSQL)
-- [ ] Tests unitarios
+## Pendiente para Deploy
+
+1. ⏳ Subir código a GitHub
+2. ⏳ Conectar GitHub a Vercel
+3. ⏳ Agregar DATABASE_URL en Vercel
+4. ⏳ Ejecutar migraciones en producción
 
 ---
 
-## Cómo Ejecutar
+## Cómo ejecutar localmente
 
 ```powershell
-# Navegar a la carpeta
 cd "C:\Users\SixtoEstebanFraile\Downloads\re-conociendonos-app"
-
-# Ejecutar servidor
 npm run dev
 ```
 
-Acceder a: **http://localhost:3002**
+---
+
+## Errores corregidos
+
+1. ✓ Cuadrados desiguales en landing - corregido con flexbox
+2. ✓ Crear contraseña - agregado campo confirmar contraseña
+3. ✓ Error debase de datos SQLite - migrado a PostgreSQL
+4. ✓ Error en calculation de focos - agregado null check
 
 ---
 
-## Notas Técnicas
-- Puerto configurado: 3002
-- DB: SQLite en `prisma/dev.db`
-- Prisma v7.8 con adapter libsql
-- Next.js 16 con Turbopack
-
-## Fecha de última actualización
+## Última actualización
 27/04/2026
