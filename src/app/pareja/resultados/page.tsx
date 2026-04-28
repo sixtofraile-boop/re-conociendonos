@@ -34,11 +34,19 @@ export default function ResultadosPareja() {
     fetch(`/api/sesiones?session_id=${sid}`)
       .then((res) => res.json())
       .then(async (data) => {
+        console.log("API response:", data);
         const respuestas = data.sesion?.respuestas;
+        console.log("respuestas:", respuestas);
+        console.log("persona:", per);
+        console.log("respuestas[per]:", respuestas?.[per]);
+        
         if (respuestas && respuestas[per]) {
           const { calcularResultadosIndividualPareja } = await import("@/lib/calcular");
           const results = calcularResultadosIndividualPareja(respuestas[per]);
+          console.log("results:", results);
           setResultado(results);
+        } else {
+          console.log("No responses found for persona:", per);
         }
       })
       .catch(console.error)

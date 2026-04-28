@@ -48,5 +48,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Session not found" }, { status: 404 });
   }
 
+  console.log("GET /api/sesiones: sesion.respuestas:", JSON.stringify(sesion.respuestas));
   return NextResponse.json({ sesion });
 }

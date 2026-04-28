@@ -279,8 +279,8 @@ export function calcularResultadosIndividualPareja(
   for (const dim of dimensiones) {
     const pregDim = map[dim];
     
-    const yo_hist = pregDim.length ? pregDim.reduce((acc, r) => acc + r.hist_yo * 10, 0) / pregDim.length : 0;
-    const yo_act = pregDim.length ? pregDim.reduce((acc, r) => acc + r.act_yo * 10, 0) / pregDim.length : 0;
+    const yo_hist = pregDim.length ? pregDim.reduce((acc, r) => acc + r.hist_yo, 0) / pregDim.length : 0;
+    const yo_act = pregDim.length ? pregDim.reduce((acc, r) => acc + r.act_yo, 0) / pregDim.length : 0;
     const variacion = yo_act - yo_hist;
     
     const nivel_act = yo_act;
@@ -294,8 +294,8 @@ export function calcularResultadosIndividualPareja(
     const puntaje = (100 - nivel_act) + Math.abs(variacion) * 1.5;
     
     const puntajesPregunta: { id: number; puntaje: number }[] = pregDim.map(r => {
-      const n_act = r.act_yo * 10;
-      const v = n_act - r.hist_yo * 10;
+      const n_act = r.act_yo;
+      const v = n_act - r.hist_yo;
       return { id: r.pregunta_id, puntaje: (100 - n_act) + Math.abs(v) * 1.5 };
     });
     
