@@ -20,6 +20,7 @@ export default function ParejaPage() {
   const [isRecuperar, setIsRecuperar] = useState(false);
   const [emailRecuperar, setEmailRecuperar] = useState("");
   const [passwordRecuperar, setPasswordRecuperar] = useState("");
+  const [nombreRecuperar, setNombreRecuperar] = useState("");
   const [errorRecuperar, setErrorRecuperar] = useState("");
 
   const handleCreate = async () => {
@@ -92,8 +93,8 @@ export default function ParejaPage() {
   };
 
   const handleRecuperar = async () => {
-    if (!emailRecuperar || !passwordRecuperar) {
-      setErrorRecuperar("Completa email y contraseña");
+    if (!emailRecuperar || !passwordRecuperar || !nombreRecuperar) {
+      setErrorRecuperar("Completa nombre, email y contraseña");
       return;
     }
     setLoading(true);
@@ -110,6 +111,7 @@ export default function ParejaPage() {
       const { sesion, persona } = data;
       document.cookie = `session_id=${sesion.id}; path=/; max-age=2592000`;
       if (persona) document.cookie = `persona=${persona}; path=/; max-age=2592000`;
+      document.cookie = `nombre=${encodeURIComponent(nombreRecuperar)}; path=/; max-age=2592000`;
 
       // Redirigir según el estado de la sesión
       const estado = sesion.estado;
@@ -394,6 +396,14 @@ export default function ParejaPage() {
             </p>
             <div className="space-y-3">
               <input
+                type="text"
+                value={nombreRecuperar}
+                onChange={(e) => setNombreRecuperar(e.target.value)}
+                className="w-full px-4 py-3 border rounded-lg text-sm focus:outline-none"
+                style={{ borderColor: "#CCCCCC", color: "#1A274A" }}
+                placeholder="Tu nombre"
+              />
+              <input
                 type="email"
                 value={emailRecuperar}
                 onChange={(e) => setEmailRecuperar(e.target.value)}
@@ -416,7 +426,7 @@ export default function ParejaPage() {
               )}
               <div className="flex gap-2">
                 <button
-                  onClick={() => { setIsRecuperar(false); setErrorRecuperar(""); }}
+                  onClick={() => { setIsRecuperar(false); setErrorRecuperar(""); setNombreRecuperar(""); }}
                   className="flex-1 py-2.5 rounded-xl text-sm font-medium"
                   style={{ background: "#F0F2F5", color: "#444455" }}
                 >

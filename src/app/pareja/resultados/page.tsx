@@ -28,6 +28,7 @@ export default function ResultadosPareja() {
   const [nombre, setNombre] = useState<string | null>(null);
   const [hipotesis, setHipotesis] = useState("");
   const [guardando, setGuardando] = useState(false);
+  const [parejaLista, setParejaLista] = useState(false);
 
   useEffect(() => {
     const sid = getCookie("session_id");
@@ -45,9 +46,26 @@ export default function ResultadosPareja() {
         if (respuestas && respuestas[per]) {
           setResultado(calcularResultadosIndividualPareja(respuestas[per]));
         }
+        if (data.sesion?.estado === "mapa_conjunto") {
+          setParejaLista(true);
+        }
       })
       .catch(console.error)
       .finally(() => setLoading(false));
+
+    // Polling: detecta cuando la pareja termina su encuesta
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/sesiones?session_id=${sid}`);
+        const data = await res.json();
+        if (data.sesion?.estado === "mapa_conjunto") {
+          setParejaLista(true);
+          clearInterval(interval);
+        }
+      } catch { /* silencioso */ }
+    }, 5000);
+
+    return () => clearInterval(interval);
   }, [router]);
 
   const handleGuardarHipotesis = async () => {
@@ -208,13 +226,20 @@ export default function ResultadosPareja() {
           />
         </div>
 
+        {/* Banner: pareja ya terminó */}
+        {parejaLista && (
+          <div className="rounded-2xl p-4 text-center animate-pulse" style={{ background: "#C6EFCE", border: "1px solid #02C39A" }}>
+            <p className="font-bold" style={{ color: "#276221" }}>¡Tu pareja ya terminó! El mapa está listo.</p>
+          </div>
+        )}
+
         <button
           onClick={handleGuardarHipotesis}
           disabled={guardando}
           className="w-full py-4 rounded-xl font-bold text-white transition-all hover:opacity-90 disabled:opacity-50"
-          style={{ background: "#5B8DD9" }}
+          style={{ background: parejaLista ? "#02C39A" : "#5B8DD9" }}
         >
-          {guardando ? "Guardando..." : "Continuar al mapa conjunto →"}
+          {guardando ? "Guardando..." : parejaLista ? "¡Ver el mapa juntos ahora! →" : "Continuar al mapa conjunto →"}
         </button>
 
         <p className="text-xs text-center" style={{ color: "#888" }}>

@@ -378,6 +378,17 @@ export default function MapaConjunto() {
             style={{ background: "#25D366" }}>
             Compartir por WhatsApp
           </button>
+          {sessionId && (
+            <button
+              onClick={copiarCodigo}
+              className="py-3 px-5 rounded-xl text-sm font-semibold transition-all"
+              style={copiado
+                ? { background: "#C6EFCE", color: "#276221" }
+                : { background: "#F0F2F5", color: "#1A274A" }}
+            >
+              {copiado ? "¡Copiado!" : "Copiar código"}
+            </button>
+          )}
         </div>
 
         <div className="text-center pb-8">
