@@ -116,6 +116,14 @@ re-conociendonos-app/
 ### Seguridad ✓
 - Contraseñas hasheadas con bcrypt
 - GET /api/sesiones no expone password_A ni password_B
+- GET /api/sesiones valida cookie — solo el dueño puede leer sus datos
+- POST respuestas e hipótesis validan cookie antes de escribir
+- Sin console.log con datos de sesión
+
+### Recuperación de sesión ✓
+- Endpoint POST /api/sesiones/login (email + contraseña → session_id)
+- Sección "Recuperar acceso" en /individual y /pareja
+- Redirige al lugar correcto según estado (encuesta / resultados / mapa)
 
 ---
 
@@ -167,6 +175,33 @@ npm run dev -- --port 3002
 
 12. ✓ Prisma 7 rechaza `url` en schema.prisma — movido a `prisma.config.ts` con `datasource.url`
 13. ✓ `postinstall` fallaba por config duplicada — schema.prisma sin `url`, prisma.config.ts con `datasource`
+
+## Bugs corregidos en auditoría post-deploy (29/04/2026)
+
+14. ✓ getCookie no decodificaba URI — nombres con ñ/acentos se mostraban corruptos
+15. ✓ quien_ha_respondido incorrecto si B responde antes que A — lógica reescrita
+16. ✓ Sin validación de cookie en API → cualquiera podía leer/escribir sesiones ajenas
+17. ✓ Sin pantalla de error en encuestas cuando falla la carga de red
+
+---
+
+## Pendiente (próxima sesión)
+
+### Medio — afecta flujo real
+1. `getRespuestasCompletas` solo llena gaps hasta pregunta actual, no el array completo
+2. Sin validación de array completo (22/23 respuestas) antes de finalizar encuesta
+3. Cuando B termina y A aún no fue al mapa, el flujo se traba sin notificación
+4. Al recuperar sesión con login, el nombre no se restaura (solo está en cookie, no en BD)
+
+### Menor — UX
+5. Pantalla de espera no indica si pareja ya empezó
+6. Mapa conjunto: no hay botón para copiar código
+7. WhatsApp comparte link sin código prefilled
+8. Colores inconsistentes: individual usa morado, pareja usa azul
+
+### No implementado (requiere infra)
+9. Rate limiting (requiere Redis o store externo)
+10. Sincronización en tiempo real (polling / WebSocket)
 
 ---
 
