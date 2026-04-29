@@ -183,27 +183,24 @@ npm run dev -- --port 3002
 16. ✓ Sin validación de cookie en API → cualquiera podía leer/escribir sesiones ajenas
 17. ✓ Sin pantalla de error en encuestas cuando falla la carga de red
 
+## Correcciones sesión 29/04/2026
+
+18. ✓ Array sparse al finalizar encuesta — `respFinal` garantiza 23 entradas completas con `??` fallback
+19. ✓ Sin validación de 23 respuestas antes de finalizar — ahora se construye con `PREGUNTAS_PAREJA.map`
+20. ✓ Flujo traba si B termina antes que A — polling cada 5s en resultados, banner verde + botón cambia color
+21. ✓ Nombre no se restaura al recuperar sesión — campo nombre agregado al form de recuperar acceso
+22. ✓ Colores inconsistentes en encuesta — `blue-600`/`slate-*` reemplazados por `#5B8DD9`/`#1A274A`/`#444455`
+23. ✓ Sin botón copiar código en mapa revelado — agregado junto al botón de WhatsApp
+
 ---
 
 ## Pendiente (próxima sesión)
 
-### Medio — afecta flujo real
-1. `getRespuestasCompletas` solo llena gaps hasta pregunta actual, no el array completo
-2. Sin validación de array completo (22/23 respuestas) antes de finalizar encuesta
-3. Cuando B termina y A aún no fue al mapa, el flujo se traba sin notificación
-4. Al recuperar sesión con login, el nombre no se restaura (solo está en cookie, no en BD)
-
-### Menor — UX
-5. Pantalla de espera no indica si pareja ya empezó
-6. Mapa conjunto: no hay botón para copiar código
-7. WhatsApp comparte link sin código prefilled
-8. Colores inconsistentes: individual usa morado, pareja usa azul
-
 ### No implementado (requiere infra)
-9. Rate limiting (requiere Redis o store externo)
-10. Sincronización en tiempo real (polling / WebSocket)
+1. Rate limiting (requiere Redis o store externo)
+2. Sincronización en tiempo real (WebSocket) — el polling actual cubre el caso de uso básico
 
 ---
 
 ## Última actualización
-29/04/2026
+29/04/2026 — sin pendientes funcionales conocidos
