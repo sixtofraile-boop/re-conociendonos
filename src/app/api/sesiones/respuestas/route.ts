@@ -6,6 +6,11 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { session_id, persona, respuestas } = body;
 
+    const cookieSessionId = request.cookies.get("session_id")?.value;
+    if (!cookieSessionId || cookieSessionId !== session_id) {
+      return NextResponse.json({ error: "No autorizado" }, { status: 403 });
+    }
+
     const sesion = await prisma.sesion.findUnique({
       where: { id: session_id },
     });
@@ -25,12 +30,16 @@ export async function POST(request: NextRequest) {
       nuevoEstado = "mapa_conjunto";
     }
 
+    // Detecta correctamente "ambos" sin importar el orden de respuesta
+    const yaHayOtro = sesion.quien_ha_respondido !== null && sesion.quien_ha_respondido !== persona;
+    const nuevoQuienRespondio = yaHayOtro ? "ambos" : persona;
+
     await prisma.sesion.update({
       where: { id: session_id },
       data: {
         respuestas: nuevasRespuestas,
         estado: nuevoEstado,
-        quien_ha_respondido: sesion.quien_ha_respondido === "A" ? "ambos" : persona,
+        quien_ha_respondido: nuevoQuienRespondio,
       },
     });
 

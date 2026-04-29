@@ -7,10 +7,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { version, email_A, password_A, email_B, password_B } = body;
 
-    console.log("Creating session:", { version, email_A: email_A ? "provided" : null });
-
     const passwordHash = await bcrypt.hash(password_A || password_B || "default", 10);
-    console.log("Password hashed successfully");
 
     const sesion = await prisma.sesion.create({
       data: {
@@ -24,7 +21,6 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    console.log("Session created:", sesion.id);
     return NextResponse.json({ sesion: { id: sesion.id } });
   } catch (error) {
     console.error("Error creating session:", error);
@@ -40,6 +36,12 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Session ID required" }, { status: 400 });
   }
 
+  // Solo el dueño de la sesión puede leer sus datos
+  const cookieSessionId = request.cookies.get("session_id")?.value;
+  if (!cookieSessionId || cookieSessionId !== session_id) {
+    return NextResponse.json({ error: "No autorizado" }, { status: 403 });
+  }
+
   const sesion = await prisma.sesion.findUnique({
     where: { id: session_id },
   });
@@ -48,7 +50,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Session not found" }, { status: 404 });
   }
 
-  console.log("GET /api/sesiones: sesion.respuestas:", JSON.stringify(sesion.respuestas));
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { password_A, password_B, ...sesionSegura } = sesion;
   return NextResponse.json({ sesion: sesionSegura });

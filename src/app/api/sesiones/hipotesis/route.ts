@@ -6,6 +6,11 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { session_id, persona, hipotesis } = body;
 
+    const cookieSessionId = request.cookies.get("session_id")?.value;
+    if (!cookieSessionId || cookieSessionId !== session_id) {
+      return NextResponse.json({ error: "No autorizado" }, { status: 403 });
+    }
+
     const sesion = await prisma.sesion.findUnique({
       where: { id: session_id },
     });

@@ -8,7 +8,7 @@ import { RespuestaPareja } from "@/lib/types";
 function getCookie(name: string): string | null {
   if (typeof document === "undefined") return null;
   const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
-  return match ? match[2] : null;
+  return match ? decodeURIComponent(match[2]) : null;
 }
 
 export default function EncuestaPareja() {
@@ -16,6 +16,7 @@ export default function EncuestaPareja() {
   const [preguntaActual, setPreguntaActual] = useState(0);
   const [respuestas, setRespuestas] = useState<RespuestaPareja[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const [saving, setSaving] = useState(false);
   const [showIntro, setShowIntro] = useState(true);
   const [sessionId, setSessionId] = useState<string | null>(null);
@@ -40,7 +41,7 @@ export default function EncuestaPareja() {
           setPreguntaActual(respuestasPrev.length);
         }
       })
-      .catch(console.error)
+      .catch(() => setLoadError(true))
       .finally(() => setLoading(false));
   }, [router]);
 
@@ -121,6 +122,18 @@ export default function EncuestaPareja() {
 
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center">Cargando...</div>;
+  }
+
+  if (loadError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center flex-col gap-4" style={{ background: "#F8F8F8" }}>
+        <p style={{ color: "#9C0006" }}>Error al cargar la sesión. Verifica tu conexión.</p>
+        <button onClick={() => window.location.reload()}
+          className="px-6 py-3 rounded-xl font-semibold text-white" style={{ background: "#5B8DD9" }}>
+          Reintentar
+        </button>
+      </div>
+    );
   }
 
   if (showIntro) {

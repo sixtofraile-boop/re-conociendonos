@@ -13,6 +13,10 @@ export default function IndividualPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [isRecuperar, setIsRecuperar] = useState(false);
+  const [emailRecuperar, setEmailRecuperar] = useState("");
+  const [passwordRecuperar, setPasswordRecuperar] = useState("");
+  const [errorRecuperar, setErrorRecuperar] = useState("");
 
   const handleCreate = async () => {
     if (!nombre || !email || !password) {
@@ -44,6 +48,33 @@ export default function IndividualPage() {
       router.push("/individual/encuesta");
     } catch (e: any) {
       setError(e.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRecuperar = async () => {
+    if (!emailRecuperar || !passwordRecuperar) {
+      setErrorRecuperar("Completa email y contraseña");
+      return;
+    }
+    setLoading(true);
+    setErrorRecuperar("");
+    try {
+      const res = await fetch("/api/sesiones/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: emailRecuperar, password: passwordRecuperar }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Error al recuperar");
+
+      const { sesion } = data;
+      document.cookie = `session_id=${sesion.id}; path=/; max-age=2592000`;
+      const tieneRespuestas = sesion.respuestas?.I && Array.isArray(sesion.respuestas.I) && sesion.respuestas.I.length > 0;
+      router.push(tieneRespuestas ? "/individual/resultados" : "/individual/encuesta");
+    } catch (e: any) {
+      setErrorRecuperar(e.message);
     } finally {
       setLoading(false);
     }
@@ -166,6 +197,66 @@ export default function IndividualPage() {
             Al continuar aceptas los términos de privacidad. Tu resultado es personal y confidencial.
           </p>
         </div>
+
+        {/* Recuperar acceso */}
+        {!isRecuperar ? (
+          <p className="text-center mt-6 text-sm" style={{ color: "#888" }}>
+            ¿Ya tienes una sesión?{" "}
+            <button
+              onClick={() => setIsRecuperar(true)}
+              className="underline font-medium"
+              style={{ color: "#028090" }}
+            >
+              Recuperar mi resultado
+            </button>
+          </p>
+        ) : (
+          <div className="bg-white rounded-2xl p-6 shadow-sm mt-6">
+            <p className="text-sm font-semibold mb-4" style={{ color: "#1A274A" }}>
+              Recuperar sesión existente
+            </p>
+            <div className="space-y-3">
+              <input
+                type="email"
+                value={emailRecuperar}
+                onChange={(e) => setEmailRecuperar(e.target.value)}
+                className="w-full px-4 py-3 border rounded-lg text-sm focus:outline-none"
+                style={{ borderColor: "#CCCCCC", color: "#1A274A" }}
+                placeholder="Email con el que te registraste"
+              />
+              <input
+                type="password"
+                value={passwordRecuperar}
+                onChange={(e) => setPasswordRecuperar(e.target.value)}
+                className="w-full px-4 py-3 border rounded-lg text-sm focus:outline-none"
+                style={{ borderColor: "#CCCCCC", color: "#1A274A" }}
+                placeholder="Tu contraseña"
+              />
+              {errorRecuperar && (
+                <p className="text-sm px-3 py-2 rounded-lg" style={{ background: "#FFC7CE", color: "#9C0006" }}>
+                  {errorRecuperar}
+                </p>
+              )}
+              <div className="flex gap-2">
+                <button
+                  onClick={() => { setIsRecuperar(false); setErrorRecuperar(""); }}
+                  className="flex-1 py-2.5 rounded-xl text-sm font-medium"
+                  style={{ background: "#F0F2F5", color: "#444455" }}
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleRecuperar}
+                  disabled={loading}
+                  className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white disabled:opacity-50"
+                  style={{ background: "#028090" }}
+                >
+                  {loading ? "Buscando..." : "Recuperar →"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
