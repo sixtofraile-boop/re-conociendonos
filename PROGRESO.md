@@ -1,6 +1,6 @@
 # RE-CONOCIÉNDOS — Estado del Proyecto
 
-## Estado: Listo para Deploy en Vercel
+## Estado: ✅ LIVE en Producción — https://re-conociendonos.vercel.app
 
 ## Stack Tecnológico
 - **Frontend**: Next.js 16.2.4 (App Router) + TypeScript + Tailwind CSS
@@ -128,12 +128,13 @@ postgresql://neondb_owner:npg_u1HCAwK0bRjM@ep-silent-thunder-amlablv4-pooler.c-5
 
 ---
 
-## Pendiente para Deploy
+## Deploy — COMPLETADO ✅
 
-1. ⏳ Subir código a GitHub (`git push`)
-2. ⏳ Conectar GitHub a Vercel
-3. ⏳ Agregar `DATABASE_URL` en variables de entorno Vercel
-4. ⏳ Ejecutar `npx prisma db push` en producción (o via vercel.json)
+1. ✅ Subir código a GitHub (usuario: sixtofraile-boop, rama: main)
+2. ✅ Conectar GitHub a Vercel (proyecto: re-conociendonos)
+3. ✅ `DATABASE_URL` configurada en Vercel (Neon PostgreSQL)
+4. ✅ `npx prisma db push` ejecutado en build via vercel.json
+5. ✅ App live: https://re-conociendonos.vercel.app
 
 ---
 
@@ -162,5 +163,12 @@ npm run dev -- --port 3002
 
 ---
 
+## Bugs corregidos en deploy
+
+12. ✓ Prisma 7 rechaza `url` en schema.prisma — movido a `prisma.config.ts` con `datasource.url`
+13. ✓ `postinstall` fallaba por config duplicada — schema.prisma sin `url`, prisma.config.ts con `datasource`
+
+---
+
 ## Última actualización
-28/04/2026
+29/04/2026
