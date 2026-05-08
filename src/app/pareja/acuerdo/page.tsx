@@ -16,13 +16,14 @@ export default function AcuerdoConversacion() {
   const [acepta3, setAcepta3] = useState(false);
   const [acepta4, setAcepta4] = useState(false);
   const [acepta5, setAcepta5] = useState(false);
+  const [acepta6, setAcepta6] = useState(false);
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState("");
 
   const sessionId = getCookie("session_id");
   const persona = getCookie("persona");
 
-  const todosAceptados = acepta1 && acepta2 && acepta3 && acepta4 && acepta5;
+  const todosAceptados = acepta1 && acepta2 && acepta3 && acepta4 && acepta5 && acepta6;
 
   const handleAceptar = async () => {
     if (!todosAceptados || !sessionId) return;
@@ -69,15 +70,16 @@ export default function AcuerdoConversacion() {
 
         {/* Acuerdo */}
         <div className="bg-white/10 backdrop-blur rounded-2xl p-8 mb-8 text-white">
-          <p className="font-semibold mb-6 text-lg">Usaremos este mapa como espejo, no como arma.</p>
+          <p className="font-semibold mb-6 text-lg">Confirma los siguientes puntos para continuar:</p>
 
           <div className="space-y-4">
             {[
-              { id: 1, text: "No buscaremos ganar una discusión ni demostrar quién tiene razón.", state: acepta1, set: setAcepta1 },
-              { id: 2, text: "Hablaré desde \"yo siento\" y \"yo necesito\", evitando \"tú siempre\" o \"tú nunca\".", state: acepta2, set: setAcepta2 },
-              { id: 3, text: "Podemos pausar si algo duele demasiado.", state: acepta3, set: setAcepta3 },
-              { id: 4, text: "Elegiremos una sola conversación para empezar.", state: acepta4, set: setAcepta4 },
-              { id: 5, text: "Recordaremos que esto no mide la verdad, solo ordena percepciones.", state: acepta5, set: setAcepta5 },
+              { id: 1, text: "Usaremos este mapa como espejo, no como arma.", state: acepta1, set: setAcepta1 },
+              { id: 2, text: "No buscaremos ganar una discusión ni demostrar quién tiene razón.", state: acepta2, set: setAcepta2 },
+              { id: 3, text: "Hablaré desde \"yo siento\" y \"yo necesito\", evitando \"tú siempre\" o \"tú nunca\".", state: acepta3, set: setAcepta3 },
+              { id: 4, text: "Podemos pausar si algo duele demasiado.", state: acepta4, set: setAcepta4 },
+              { id: 5, text: "Elegiremos una sola conversación para empezar.", state: acepta5, set: setAcepta5 },
+              { id: 6, text: "Recordaremos que esto no mide la verdad, solo ordena percepciones.", state: acepta6, set: setAcepta6 },
             ].map((item) => (
               <label key={item.id} className="flex items-start gap-3 cursor-pointer hover:bg-white/5 p-3 rounded-lg transition-all">
                 <input

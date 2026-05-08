@@ -1,32 +1,32 @@
 import { Dimension, RespuestaPareja, RespuestaIndividual } from "./types";
 
 export const PREGUNTAS_PAREJA: { id: number; yo: string; percepcion: string; dimension: Dimension }[] = [
-  { id: 1,  dimension: "AMISTAD",    yo: "¿Disfruto genuinamente estar con mi pareja?",                                                            percepcion: "¿Cómo siento que ella/él disfruta estar conmigo?" },
+  { id: 1,  dimension: "AMISTAD",    yo: "¿Disfruto genuinamente estar con mi pareja?",                                                            percepcion: "¿Cómo siento que mi pareja disfruta estar conmigo?" },
   { id: 2,  dimension: "AMISTAD",    yo: "¿Puedo ser yo mismo/a sin filtros en esta relación?",                                                    percepcion: "¿Cuánto siento que mi pareja también puede serlo?" },
   { id: 3,  dimension: "AMISTAD",    yo: "¿Nuestras conversaciones van más allá de lo funcional y cotidiano?",                                     percepcion: "¿Cuánto siento que mi pareja también busca o valora eso?" },
-  { id: 4,  dimension: "AMISTAD",    yo: "¿Me siento en confianza real con mi pareja?",                                                            percepcion: "¿Cuánto siento que ella/él confía genuinamente en mí?" },
+  { id: 4,  dimension: "AMISTAD",    yo: "¿Me siento en confianza real con mi pareja?",                                                            percepcion: "¿Cuánto siento que mi pareja confía genuinamente en mí?" },
   { id: 5,  dimension: "AMISTAD",    yo: "¿Hay liviandad, humor y momentos de disfrute de mi parte?",                                             percepcion: "¿Cuánto percibo ese mismo disfrute en mi pareja cuando estamos juntos?" },
-  { id: 6,  dimension: "AMISTAD",    yo: "Cuando algo importante me pasa, ¿mi pareja es de las primeras personas en las que pienso?",             percepcion: "¿Cuánto creo que ella/él siente lo mismo conmigo?" },
+  { id: 6,  dimension: "AMISTAD",    yo: "Cuando algo importante me pasa, ¿mi pareja es de las primeras personas en las que pienso?",             percepcion: "¿Cuánto creo que mi pareja siente lo mismo conmigo?" },
   { id: 7,  dimension: "AMISTAD",    yo: "¿Siento que aporto a que seamos un equipo real en lo cotidiano?",                                       percepcion: "¿Cuánto percibo ese mismo aporte en mi pareja?" },
 
-  { id: 8,  dimension: "DESEO",      yo: "¿Siento deseo genuino por mi pareja?",                                                                  percepcion: "¿Cómo percibo que ella/él me desea a mí?" },
+  { id: 8,  dimension: "DESEO",      yo: "¿Siento deseo genuino por mi pareja?",                                                                  percepcion: "¿Cómo percibo que mi pareja me desea a mí?" },
   { id: 9,  dimension: "DESEO",      yo: "¿Me siento atraído/a físicamente por mi pareja?",                                                       percepcion: "¿Cuánto siento que esa atracción es recíproca?" },
   { id: 10, dimension: "DESEO",      yo: "¿Tomo iniciativa en nuestra vida íntima?",                                                              percepcion: "¿Cuánto percibo iniciativa genuina también en mi pareja?" },
   { id: 11, dimension: "DESEO",      yo: "¿Estoy satisfecho/a con nuestra vida íntima?",                                                          percepcion: "¿Cuánto siento que mi pareja también lo está?" },
   { id: 12, dimension: "DESEO",      yo: "¿Puedo expresar lo que deseo o necesito íntimamente?",                                                  percepcion: "¿Cuánto siento que mi pareja hace lo mismo conmigo?" },
   { id: 13, dimension: "DESEO",      yo: "Cuando estamos íntimamente, ¿siento que me entrego y me conecto de verdad?",                            percepcion: "¿Cuánto percibo esa misma conexión en mi pareja?" },
 
-  { id: 14, dimension: "PROYECTO",   yo: "¿Siento que quiero construir algo real con mi pareja?",                                                  percepcion: "¿Cuánto percibo en ella/él esa misma intención?" },
-  { id: 15, dimension: "PROYECTO",   yo: "¿Me siento parte del proyecto de vida de mi pareja?",                                                    percepcion: "¿Cuánto siento que ella/él se siente parte del mío?" },
+  { id: 14, dimension: "PROYECTO",   yo: "¿Siento que quiero construir algo real con mi pareja?",                                                  percepcion: "¿Cuánto percibo en mi pareja esa misma intención?" },
+  { id: 15, dimension: "PROYECTO",   yo: "¿Me siento parte del proyecto de vida de mi pareja?",                                                    percepcion: "¿Cuánto siento que mi pareja se siente parte del mío?" },
   { id: 16, dimension: "PROYECTO",   yo: "¿He puesto de mi parte para conversar y construir lo que queremos juntos?",                              percepcion: "¿Cuánto percibo esa disposición también en mi pareja?" },
-  { id: 17, dimension: "PROYECTO",   yo: "¿Mis decisiones del día a día van en línea con lo que queremos como pareja?",                            percepcion: "¿Cuánto percibo esa coherencia también en ella/él?" },
+  { id: 17, dimension: "PROYECTO",   yo: "¿Mis decisiones del día a día van en línea con lo que queremos como pareja?",                            percepcion: "¿Cuánto percibo esa coherencia también en mi pareja?" },
   { id: 18, dimension: "PROYECTO",   yo: "¿Este proyecto de relación me hace sentido hoy?",                                                        percepcion: "¿Cuánto siento que a mi pareja también se lo hace?" },
 
   { id: 19, dimension: "COMPROMISO", yo: "¿Me hago cargo de cuidar y sostener esta relación más allá del ánimo del momento?",                     percepcion: "¿Cuánto percibo ese mismo cuidado en mi pareja?" },
   { id: 20, dimension: "COMPROMISO", yo: "¿Soy coherente entre lo que digo y lo que hago en esta relación?",                                      percepcion: "¿Cuánto percibo esa coherencia en mi pareja?" },
-  { id: 21, dimension: "COMPROMISO", yo: "¿Estoy dispuesto/a a hacer cambios genuinos por el bienestar de la relación?",                          percepcion: "¿Cuánto siento esa disposición también en ella/él?" },
+  { id: 21, dimension: "COMPROMISO", yo: "¿Estoy dispuesto/a a hacer cambios genuinos por el bienestar de la relación?",                          percepcion: "¿Cuánto siento esa disposición también en mi pareja?" },
   { id: 22, dimension: "COMPROMISO", yo: "Cuando aparecen problemas, ¿me hago cargo de mi parte sin evitar ni culpar?",                           percepcion: "¿Cuánto percibo esa misma responsabilidad en mi pareja?" },
-  { id: 23, dimension: "COMPROMISO", yo: "¿Elijo activamente a mi pareja incluso en los momentos difíciles?",                                     percepcion: "¿Cuánto siento que ella/él también me elige?" },
+  { id: 23, dimension: "COMPROMISO", yo: "¿Elijo activamente a mi pareja incluso en los momentos difíciles?",                                     percepcion: "¿Cuánto siento que mi pareja también me elige?" },
 ];
 
 export const PREGUNTAS_INDIVIDUAL: { id: number; texto: string; dimension: Dimension }[] = [

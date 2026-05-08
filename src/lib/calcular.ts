@@ -16,6 +16,20 @@ import {
   COLOR_ESTADO
 } from "./preguntas";
 
+const PESO_ESTADO: Record<Estado, number> = { ROJO: 3, AMARILLO: 2, VERDE: 1 };
+
+function ordenarDimensiones(dims: ResultadoDimension[]): void {
+  dims.sort((a, b) => {
+    const pesoA = PESO_ESTADO[a.estado];
+    const pesoB = PESO_ESTADO[b.estado];
+    if (pesoA !== pesoB) return pesoB - pesoA;
+    if (a.brecha !== b.brecha) return b.brecha - a.brecha;
+    if (Math.abs(a.variacion) !== Math.abs(b.variacion)) return Math.abs(b.variacion) - Math.abs(a.variacion);
+    return a.nivel_act - b.nivel_act;
+  });
+  dims.forEach((r, i) => r.rank = i + 1);
+}
+
 function calcularPercentil(array: number[], valor: number): number {
   const sorted = [...array].sort((a, b) => a - b);
   const below = sorted.filter(v => v < valor).length;
@@ -156,8 +170,7 @@ export function calcularResultadosPareja(
     global_act += nivel_act;
   }
 
-  resultados.sort((a, b) => b.puntaje - a.puntaje);
-  resultados.forEach((r, i) => r.rank = i + 1);
+  ordenarDimensiones(resultados);
 
   const rojosPareja = resultados.filter(r => r.estado === "ROJO").length;
   return {
@@ -244,8 +257,7 @@ export function calcularResultadosIndividual(
     global_act += yo_act;
   }
 
-  resultados.sort((a, b) => b.puntaje - a.puntaje);
-  resultados.forEach((r, i) => r.rank = i + 1);
+  ordenarDimensiones(resultados);
 
   const rojosInd = resultados.filter(r => r.estado === "ROJO").length;
   return {
@@ -334,8 +346,7 @@ export function calcularResultadosIndividualPareja(
     global_act += nivel_act;
   }
   
-  resultados.sort((a, b) => b.puntaje - a.puntaje);
-  resultados.forEach((r, i) => r.rank = i + 1);
+  ordenarDimensiones(resultados);
 
   const rojosIndPar = resultados.filter(r => r.estado === "ROJO").length;
   return {

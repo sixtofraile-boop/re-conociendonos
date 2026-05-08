@@ -32,7 +32,7 @@ export default function Home() {
               className="px-8 py-4 rounded-xl font-semibold text-white transition-all hover:opacity-90"
               style={{ background: "#028090" }}
             >
-              Empieza tu test gratuito →
+              Empezar con Mi Mirada →
             </Link>
             <Link
               href="/pareja"
@@ -144,7 +144,7 @@ export default function Home() {
                 className="mt-auto text-center px-6 py-3 rounded-xl font-semibold text-white transition-all hover:opacity-90"
                 style={{ background: "#028090" }}
               >
-                Comenzar test gratuito →
+                Empezar con Mi Mirada →
               </Link>
             </div>
 
