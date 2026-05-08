@@ -20,13 +20,18 @@ model Sesion {
   token_expira        DateTime? // Expiración 7 días
   acuerdo_aceptado_A  Boolean?  @default(false) // Acuerdo antes del reveal
   acuerdo_aceptado_B  Boolean?  @default(false) // Acuerdo antes del reveal
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
-  
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
   respuestas          Json?
-  
+
   hipotesis_A         String?
   hipotesis_B         String?
-  
+
   quien_ha_respondido String?
+
+  whatsapp_A          String?
+  whatsapp_B          String?
+  consentimientos_A   Json?
+  resultado_json      Json?
 }

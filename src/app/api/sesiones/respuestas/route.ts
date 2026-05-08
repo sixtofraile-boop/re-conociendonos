@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { validarEstado } from "@/lib/estados";
+import { calcularResultadosIndividual, calcularResultadosIndividualPareja } from "@/lib/calcular";
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,6 +19,12 @@ export async function POST(request: NextRequest) {
 
     if (!sesion) {
       return NextResponse.json({ error: "Sesión no encontrada" }, { status: 404 });
+    }
+
+    // Validar estado de sesión
+    const estadoValido = validarEstado(sesion.estado, "responder");
+    if (!estadoValido.valido) {
+      return NextResponse.json({ error: estadoValido.error }, { status: 400 });
     }
 
     const respuestasActuales = (sesion.respuestas as Record<string, unknown>) || {};
@@ -40,12 +48,24 @@ export async function POST(request: NextRequest) {
 
     const nuevoQuienRespondio = esPrimero ? persona : "ambos";
 
+    // Calcular y cachear resultado_json
+    const nuevasMap = nuevasRespuestas as Record<string, any>;
+    let resultadoCache = sesion.resultado_json as Record<string, unknown> || {};
+    if (sesion.version === "individual") {
+      resultadoCache = { individual: calcularResultadosIndividual(respuestas) };
+    } else if (persona === "A" || persona === "B") {
+      const resultA = calcularResultadosIndividualPareja(nuevasMap["A"] || []);
+      const resultB = calcularResultadosIndividualPareja(nuevasMap["B"] || []);
+      resultadoCache = { A: resultA, B: resultB };
+    }
+
     await prisma.sesion.update({
       where: { id: session_id },
       data: {
         respuestas: nuevasRespuestas,
         estado: nuevoEstado,
         quien_ha_respondido: nuevoQuienRespondio,
+        resultado_json: resultadoCache as any,
       },
     });
 

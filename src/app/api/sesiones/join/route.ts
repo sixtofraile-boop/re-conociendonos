@@ -5,7 +5,7 @@ import bcrypt from "bcryptjs";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { session_id, email_B, password_B } = body;
+    const { session_id, nombre_B, email_B, password_B, whatsapp_B } = body;
 
     const sesion = await prisma.sesion.findUnique({
       where: { id: session_id },
@@ -20,8 +20,10 @@ export async function POST(request: NextRequest) {
     const updatedsesion = await prisma.sesion.update({
       where: { id: session_id },
       data: {
+        nombre_B: nombre_B || null,
         email_B: email_B,
         password_B: passwordHash,
+        whatsapp_B: whatsapp_B || null,
         estado: sesion.respuestas && Object.keys(sesion.respuestas as object).length > 0 ? "waiting_other_response" : "in_progress",
       },
     });

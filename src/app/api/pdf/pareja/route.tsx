@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
     // Obtener persona y nombre de las cookies
     const persona = request.cookies.get("persona")?.value || null;
     const nombreA = request.cookies.get("nombre")?.value || null;
-    const nombreB = sesion.email_B ? "Pareja" : null;
+    const nombreB = sesion.nombre_B || null;
 
     // Renderizar PDF
     const pdfBuffer = await renderToBuffer(
@@ -71,7 +71,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error("Error generating PDF:", error);
     return NextResponse.json(
-      { error: "Error al generar PDF: " + (error as Error).message },
+      { error: "No pudimos generar tu PDF. Intenta nuevamente." },
       { status: 500 }
     );
   }

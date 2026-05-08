@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
       // Actualizar estado a expirada
       await prisma.sesion.update({
         where: { id: sesion.id },
-        data: { estado: "expirada" }
+        data: { estado: "expired" }
       });
       return NextResponse.json({ 
         error: "Este link ya expiró. Por cuidado y privacidad, las invitaciones duran 7 días. Puedes pedir a tu pareja que genere una nueva invitación." 
@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Verificar si ya fue cancelada
-    if (sesion.estado === "cancelada") {
+    if (sesion.estado === "cancelled") {
       return NextResponse.json({ 
         error: "Esta invitación ya no está disponible." 
       }, { status: 410 });
@@ -59,7 +59,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { token, nombre_B, email_B, password_B } = body;
+    const { token, nombre_B, email_B, password_B, whatsapp_B } = body;
 
     if (!token) {
       return NextResponse.json({ error: "Token requerido" }, { status: 400 });
@@ -91,6 +91,7 @@ export async function POST(request: NextRequest) {
         nombre_B: nombre_B || null,
         email_B: email_B || null,
         password_B: passwordHash,
+        whatsapp_B: whatsapp_B || null,
         estado: "in_progress" // B aceptó, ahora puede responder
       }
     });

@@ -19,6 +19,7 @@ function InviteContent() {
 
   const [nombre, setNombre] = useState("");
   const [email, setEmail] = useState("");
+  const [whatsapp, setWhatsapp] = useState("");
   const [password, setPassword] = useState("");
   const [confirmar, setConfirmar] = useState("");
   const [enviando, setEnviando] = useState(false);
@@ -55,7 +56,7 @@ function InviteContent() {
       const res = await fetch("/api/sesiones/invite", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token, nombre_B: nombre, email_B: email, password_B: password }),
+        body: JSON.stringify({ token, nombre_B: nombre, email_B: email, password_B: password, whatsapp_B: whatsapp || undefined }),
       });
 
       const data = await res.json();
@@ -146,6 +147,20 @@ function InviteContent() {
               className="w-full px-4 py-3 rounded-xl border text-sm focus:outline-none focus:ring-2"
               style={{ borderColor: "#CCCCCC", color: "#1A274A" }}
               placeholder="tu@correo.com"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1" style={{ color: "#444455" }}>
+              WhatsApp <span className="font-normal" style={{ color: "#888" }}>(opcional)</span>
+            </label>
+            <input
+              type="tel"
+              value={whatsapp}
+              onChange={(e) => setWhatsapp(e.target.value)}
+              className="w-full px-4 py-3 rounded-xl border text-sm focus:outline-none focus:ring-2"
+              style={{ borderColor: "#CCCCCC", color: "#1A274A" }}
+              placeholder="+56 9 XXXX XXXX"
             />
           </div>
 

@@ -58,7 +58,14 @@ export default function IndividualPage() {
       const res = await fetch("/api/sesiones", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ version: "individual", nombre_A: nombre, email_A: email, password_A: password }),
+        body: JSON.stringify({
+          version: "individual",
+          nombre_A: nombre,
+          email_A: email,
+          password_A: password,
+          whatsapp_A: whatsapp || undefined,
+          consentimientos_A: CONSENTIMIENTOS.filter((_, i) => consentimientos[i]),
+        }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Error al crear sesión");

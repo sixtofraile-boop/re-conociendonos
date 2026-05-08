@@ -6,7 +6,7 @@ import { randomBytes } from "crypto";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { version, nombre_A, email_A, password_A, email_B, password_B } = body;
+    const { version, nombre_A, email_A, password_A, email_B, password_B, whatsapp_A, consentimientos_A } = body;
 
     const passwordHash = await bcrypt.hash(password_A || password_B || "default", 10);
 
@@ -24,6 +24,8 @@ export async function POST(request: NextRequest) {
         password_A: passwordHash,
         email_B: email_B || null,
         password_B: email_B ? passwordHash : null,
+        whatsapp_A: whatsapp_A || null,
+        consentimientos_A: consentimientos_A || null,
         token_invitacion: token,
         token_expira: expira,
         respuestas: {},
@@ -38,7 +40,7 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error("Error creating session:", error);
-    return NextResponse.json({ error: "Error al crear sesión: " + (error as Error).message }, { status: 500 });
+    return NextResponse.json({ error: "No pudimos crear la sesión. Intenta nuevamente." }, { status: 500 });
   }
 }
 

@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error("Error generating PDF:", error);
     return NextResponse.json(
-      { error: "Error al generar PDF: " + (error as Error).message },
+      { error: "No pudimos generar tu PDF. Intenta nuevamente." },
       { status: 500 }
     );
   }

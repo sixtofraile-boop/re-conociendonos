@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
     // Actualizar estado
     await prisma.sesion.update({
       where: { id: session_id },
-      data: { estado: "invitacion_enviada" }
+      data: { estado: "invitation_sent" }
     });
 
     return NextResponse.json({ success: true, email_id: data?.id });

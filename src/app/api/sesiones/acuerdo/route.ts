@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { validarEstado } from "@/lib/estados";
 
 export async function POST(request: NextRequest) {
   try {
@@ -31,6 +32,12 @@ export async function POST(request: NextRequest) {
 
     if (!sesion) {
       return NextResponse.json({ error: "Sesión no encontrada" }, { status: 404 });
+    }
+
+    // Validar estado de sesión
+    const estadoValido = validarEstado(sesion.estado, "aceptar_acuerdo");
+    if (!estadoValido.valido) {
+      return NextResponse.json({ error: estadoValido.error }, { status: 400 });
     }
 
     // Actualizar el estado del acuerdo
