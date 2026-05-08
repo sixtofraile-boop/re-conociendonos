@@ -205,6 +205,21 @@ export default function ResultadosIndividual() {
           <p className="text-white leading-relaxed">{mensaje}</p>
         </div>
 
+        {/* Dimensión prioritaria */}
+        {resultado.dimensiones.length > 0 && (
+          <div className="rounded-2xl p-6" style={{ background: "#EBF3FB", borderLeft: "4px solid #5B8DD9" }}>
+            <p className="text-xs font-semibold uppercase tracking-wide mb-2" style={{ color: "#5B8DD9" }}>
+              Dimensión prioritaria
+            </p>
+            <p className="text-lg font-bold mb-1" style={{ color: "#1A274A" }}>
+              {resultado.dimensiones[0].dimension}
+            </p>
+            <p className="text-sm" style={{ color: "#444455" }}>
+              {resultado.dimensiones[0].criterio_texto}
+            </p>
+          </div>
+        )}
+
         {/* Derivación profesional — 3+ ROJO */}
         {mostrarProfesional && (
           <div className="rounded-2xl p-6" style={{ background: "#FFEB9C", border: "1px solid #E8B850" }}>

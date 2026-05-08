@@ -239,7 +239,7 @@ export default function EncuestaIndividual() {
                 </select>
               </div>
               <div>
-                <p className="text-xs text-slate-500 mb-2">Hoy</p>
+                <p className="text-xs mb-2" style={{ color: "#888" }}>Hoy</p>
                   <select
                     value={currentResp.act_par}
                     onChange={(e) => handleRespuesta("act_par", e.target.value)}

@@ -373,6 +373,20 @@ export default function MapaConjunto() {
           </p>
         </div>
 
+        {/* Ritual de conversación (spec 11.2) */}
+        <div className="rounded-2xl p-6" style={{ background: "#F0F2F5", border: "1px solid #CCC" }}>
+          <p className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: "#028090" }}>
+            Ritual de conversación sugerido
+          </p>
+          <p className="text-sm leading-relaxed" style={{ color: "#444455" }}>
+            <strong>45 minutos</strong> · Sin interrupciones · Una sola pregunta para empezar.
+          </p>
+          <p className="text-sm mt-2" style={{ color: "#444455" }}>
+            No necesitan resolver todo hoy. Elijan una pregunta de las que aparecen arriba, 
+            busquen un momento tranquilo y dense permiso para pausar si algo se vuelve demasiado intenso.
+          </p>
+        </div>
+
         {/* Pregunta de cierre */}
         <div className="rounded-2xl p-8 text-center" style={{ background: "#1A274A" }}>
           <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: "#E8B850" }}>

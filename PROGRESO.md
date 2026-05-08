@@ -3,7 +3,7 @@
 ## Estado: ✅ LIVE en Producción — https://re-conociendonos.vercel.app
 
 ## Última actualización
-08/05/2026 — Email invite UI, 3 variantes mensaje spec 6.3, feedback post-experiencia spec 16
+08/05/2026 — Lenguaje mi pareja, acuerdo 6 checkbox, CTA landing, desempate dimensiones
 
 ## Stack Tecnológico
 - **Frontend**: Next.js 16.2.4 (App Router) + TypeScript + Tailwind CSS
