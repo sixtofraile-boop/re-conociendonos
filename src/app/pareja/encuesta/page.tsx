@@ -99,11 +99,7 @@ export default function EncuestaPareja() {
       );
       try {
         await guardarRespuestas(respFinal);
-        if (persona === "A") {
-          router.push("/pareja/resultados");
-        } else {
-          router.push("/pareja/mapa");
-        }
+        router.push("/pareja/resultados");
       } catch (e) {
         console.error(e);
         alert("Error al guardar. Intenta de nuevo.");
@@ -212,14 +208,13 @@ export default function EncuestaPareja() {
         </div>
 
         <div className="bg-white rounded-2xl p-6 shadow-lg mb-6">
-          <p className="text-lg mb-8" style={{ color: "#1A274A" }}>{pregunta.texto}</p>
-
           {[
-            { label: "Cómo me veo yo", key: "hist_yo", key2: "act_yo" },
-            { label: "Cómo percibo a mi pareja", key: "hist_par", key2: "act_par" },
+            { label: "Yo", preguntaTexto: pregunta.yo, key: "hist_yo", key2: "act_yo" },
+            { label: "Mi percepción de mi pareja", preguntaTexto: pregunta.percepcion, key: "hist_par", key2: "act_par" },
           ].map((seccion) => (
             <div key={seccion.key} className="mb-8 last:mb-0">
-              <p className="font-medium mb-4" style={{ color: "#444455" }}>{seccion.label}</p>
+              <p className="text-xs font-semibold uppercase tracking-wide mb-1" style={{ color: "#888" }}>{seccion.label}</p>
+              <p className="text-lg mb-4" style={{ color: "#1A274A" }}>{seccion.preguntaTexto}</p>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <p className="text-xs mb-2" style={{ color: "#888" }}>Histórico (a lo largo de la relación)</p>

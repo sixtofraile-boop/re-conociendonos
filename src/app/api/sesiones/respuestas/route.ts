@@ -22,17 +22,23 @@ export async function POST(request: NextRequest) {
     const respuestasActuales = (sesion.respuestas as Record<string, unknown>) || {};
     const nuevasRespuestas = { ...respuestasActuales, [persona]: respuestas };
 
+    // Estados según spec 13.2
+    const quienYaRespondio = sesion.quien_ha_respondido;
+    const esPrimero = quienYaRespondio === null || quienYaRespondio === persona;
+    
     let nuevoEstado = sesion.estado;
-    if (persona === "A") {
-      nuevoEstado = "resultados_A";
-      if (sesion.email_B) nuevoEstado = "esperando_B";
-    } else if (persona === "B") {
-      nuevoEstado = "mapa_conjunto";
+    if (persona === "A" || persona === "B") {
+      const otroHaRespondido = quienYaRespondio !== null && quienYaRespondio !== persona;
+      if (!otroHaRespondido) {
+        // Primera persona en terminar - esperar a la otra
+        nuevoEstado = "waiting_other_response";
+      } else {
+        // Ambas ya terminaron
+        nuevoEstado = "both_tests_completed";
+      }
     }
 
-    // Detecta correctamente "ambos" sin importar el orden de respuesta
-    const yaHayOtro = sesion.quien_ha_respondido !== null && sesion.quien_ha_respondido !== persona;
-    const nuevoQuienRespondio = yaHayOtro ? "ambos" : persona;
+    const nuevoQuienRespondio = esPrimero ? persona : "ambos";
 
     await prisma.sesion.update({
       where: { id: session_id },

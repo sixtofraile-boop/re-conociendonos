@@ -1,6 +1,6 @@
 export type Dimension = "AMISTAD" | "DESEO" | "PROYECTO" | "COMPROMISO";
 export type Estado = "ROJO" | "AMARILLO" | "VERDE";
-export type Zona = "Zona crítica" | "Zona sensible" | "Zona de atención" | "Zona sólida";
+export type Zona = "Zona tranquila" | "Zona de cuidado" | "Zona crítica";
 export type Congruencia = "coincidentes" | "divergentes";
 
 export interface RespuestaPareja {
@@ -55,6 +55,7 @@ export interface ResultadoGlobal {
   global_act: number;
   global_var: number;
   dimensiones: ResultadoDimension[];
+  recomienda_profesional: boolean;
 }
 
 export interface Sesion {

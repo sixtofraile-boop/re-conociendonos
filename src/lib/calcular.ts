@@ -28,12 +28,10 @@ function semaforoPareja(nivel_act: number, variacion: number, brecha: number): E
   return "VERDE";
 }
 
-function zona(estado: Estado, variacion: number): Zona {
-  if (estado === "ROJO") {
-    return variacion < -25 ? "Zona crítica" : "Zona sensible";
-  }
-  if (estado === "AMARILLO") return "Zona de atención";
-  return "Zona sólida";
+function zona(estado: Estado): Zona {
+  if (estado === "ROJO") return "Zona crítica";
+  if (estado === "AMARILLO") return "Zona de cuidado";
+  return "Zona tranquila";
 }
 
 function criterioTexto(variacion: number, nivel_act: number, brecha: number): string {
@@ -104,7 +102,7 @@ export function calcularResultadosPareja(
     const puntaje = (100 - nivel_act) + Math.abs(variacion) * 1.5 + brecha * 0.5;
 
     const estado = semaforoPareja(nivel_act, variacion, brecha);
-    const zonaResult = zona(estado, variacion);
+    const zonaResult = zona(estado);
     const criterio = criterioTexto(variacion, nivel_act, brecha);
 
     const puntajesPregunta: { id: number; puntaje: number }[] = respuestasA.map(r => {
@@ -126,7 +124,7 @@ export function calcularResultadosPareja(
       if (!rA || !rB) return null;
       return {
         pregunta_id: p.id,
-        texto: preg.texto,
+        texto: preg.yo,
         nivel_act: ((rA.act_yo * 10) + (rB.act_par * 10)) / 2,
         brecha: Math.abs(rA.act_yo * 10 - rB.act_par * 10),
         variacion: ((rA.act_yo * 10) + (rB.act_par * 10)) / 2 - ((rA.hist_yo * 10) + (rB.hist_par * 10)) / 2,
@@ -161,17 +159,19 @@ export function calcularResultadosPareja(
   resultados.sort((a, b) => b.puntaje - a.puntaje);
   resultados.forEach((r, i) => r.rank = i + 1);
 
+  const rojosPareja = resultados.filter(r => r.estado === "ROJO").length;
   return {
     global_hist: global_hist / 4,
     global_act: global_act / 4,
     global_var: global_act / 4 - global_hist / 4,
-    dimensiones: resultados
+    dimensiones: resultados,
+    recomienda_profesional: rojosPareja >= 3
   };
 }
 
 export function calcularResultadosIndividual(
   respuestas: RespuestaIndividual[]
-): { global: { hist: number; act: number; var: number }; dimensiones: ResultadoDimension[] } {
+): { global: { hist: number; act: number; var: number }; dimensiones: ResultadoDimension[]; recomienda_profesional: boolean } {
   const dimensiones: Dimension[] = ["AMISTAD", "DESEO", "PROYECTO", "COMPROMISO"];
   const resultados: ResultadoDimension[] = [];
 
@@ -219,9 +219,7 @@ export function calcularResultadosIndividual(
       estado = "VERDE";
     }
 
-    const zonaResult: Zona = estado === "ROJO"
-      ? (variacion_yo < -25 ? "Zona crítica" : "Zona sensible")
-      : estado === "AMARILLO" ? "Zona de atención" : "Zona sólida";
+    const zonaResult = zona(estado);
 
     const criterio = criterioTexto(variacion, nivel_act, 0);
 
@@ -249,13 +247,15 @@ export function calcularResultadosIndividual(
   resultados.sort((a, b) => b.puntaje - a.puntaje);
   resultados.forEach((r, i) => r.rank = i + 1);
 
+  const rojosInd = resultados.filter(r => r.estado === "ROJO").length;
   return {
     global: {
       hist: global_hist / 4,
       act: global_act / 4,
       var: global_act / 4 - global_hist / 4
     },
-    dimensiones: resultados
+    dimensiones: resultados,
+    recomienda_profesional: rojosInd >= 3
   };
 }
 
@@ -288,15 +288,15 @@ export function calcularResultadosIndividualPareja(
     const brecha = 0;
     
     const estado = semaforoPareja(nivel_act, variacion, brecha);
-    const zonaResult = zona(estado, variacion);
+    const zonaResult = zona(estado);
     const criterio = criterioTexto(variacion, nivel_act, brecha);
     
     const puntaje = (100 - nivel_act) + Math.abs(variacion) * 1.5;
     
-    const puntajesPregunta: { id: number; puntaje: number }[] = pregDim.map(r => {
-      const n_act = r.act_yo;
-      const v = n_act - r.hist_yo;
-      return { id: r.pregunta_id, puntaje: (100 - n_act) + Math.abs(v) * 1.5 };
+    const puntajesPregunta: { id: number; puntaje: number; nivel_act: number; variacion: number }[] = pregDim.map(r => {
+      const n_act = r.act_yo * 10;
+      const v = n_act - r.hist_yo * 10;
+      return { id: r.pregunta_id, puntaje: (100 - n_act) + Math.abs(v) * 1.5, nivel_act: n_act, variacion: v };
     });
     
     puntajesPregunta.sort((a, b) => b.puntaje - a.puntaje);
@@ -305,10 +305,10 @@ export function calcularResultadosIndividualPareja(
       if (!preg) return null;
       return {
         pregunta_id: p.id,
-        texto: preg.texto,
-        nivel_act: p.puntaje,
+        texto: preg.yo,
+        nivel_act: p.nivel_act,
         brecha: 0,
-        variacion: 0,
+        variacion: p.variacion,
         rank: i + 1
       };
     }).filter((f): f is FocoPregunta => f !== null);
@@ -336,12 +336,14 @@ export function calcularResultadosIndividualPareja(
   
   resultados.sort((a, b) => b.puntaje - a.puntaje);
   resultados.forEach((r, i) => r.rank = i + 1);
-  
+
+  const rojosIndPar = resultados.filter(r => r.estado === "ROJO").length;
   return {
     global_hist: global_hist / 4,
     global_act: global_act / 4,
     global_var: global_act / 4 - global_hist / 4,
-    dimensiones: resultados
+    dimensiones: resultados,
+    recomienda_profesional: rojosIndPar >= 3
   };
 }
 

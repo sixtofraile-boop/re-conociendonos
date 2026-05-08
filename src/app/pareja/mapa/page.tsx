@@ -13,10 +13,9 @@ function getCookie(name: string): string | null {
 }
 
 const ZONA_COLORES: Record<string, { bg: string; text: string }> = {
-  "Zona crítica":     { bg: "#FFC7CE", text: "#9C0006" },
-  "Zona sensible":    { bg: "#FFE0B2", text: "#E65100" },
-  "Zona de atención": { bg: "#FFEB9C", text: "#9C6500" },
-  "Zona sólida":      { bg: "#C6EFCE", text: "#276221" },
+  "Zona crítica":    { bg: "#FFC7CE", text: "#9C0006" },
+  "Zona de cuidado": { bg: "#FFEB9C", text: "#9C6500" },
+  "Zona tranquila":  { bg: "#C6EFCE", text: "#276221" },
 };
 
 export default function MapaConjunto() {
@@ -45,9 +44,20 @@ export default function MapaConjunto() {
       .then((data) => {
         const respuestas = data.sesion?.respuestas;
         setQuienRespondio(data.sesion?.quien_ha_respondido ?? null);
+        
+        // Verificar si ambos aceptaron el acuerdo
+        const acuerdoA = data.sesion?.acuerdo_aceptado_A;
+        const acuerdoB = data.sesion?.acuerdo_aceptado_B;
+        
         if (respuestas && respuestas.A && respuestas.B) {
           setResultado(calcularResultadosPareja(respuestas.A, respuestas.B));
           setSesion(data.sesion);
+          
+          // Si no han aceptado el acuerdo, redirigir
+          if (!acuerdoA || !acuerdoB) {
+            router.push("/pareja/acuerdo");
+            return;
+          }
         }
       })
       .catch(console.error)
@@ -150,8 +160,7 @@ export default function MapaConjunto() {
     );
   }
 
-  const rojos = resultado.dimensiones.filter((d) => d.estado === "ROJO").length;
-  const mostrarProfesional = rojos >= 3;
+  const mostrarProfesional = resultado.recomienda_profesional;
   const miHipotesis = persona === "B" ? sesion.hipotesis_B : sesion.hipotesis_A;
   const hipotesisPareja = persona === "B" ? sesion.hipotesis_A : sesion.hipotesis_B;
 
@@ -201,7 +210,17 @@ export default function MapaConjunto() {
           )}
 
           <button
-            onClick={() => setRevealed(true)}
+            onClick={() => {
+              setRevealed(true);
+              // Actualizar estado a reveal_opened
+              if (sessionId) {
+                fetch("/api/sesiones", {
+                  method: "PATCH",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ session_id: sessionId, estado: "reveal_opened" }),
+                }).catch(console.error);
+              }
+            }}
             className="px-10 py-4 rounded-xl font-bold text-white text-lg transition-all hover:opacity-90"
             style={{ background: "#5B8DD9" }}
           >
@@ -345,6 +364,15 @@ export default function MapaConjunto() {
           })}
         </div>
 
+        {/* Mensaje post-reveal (spec 6.5) */}
+        <div className="rounded-2xl p-6 text-center" style={{ background: "#EBF3FB", border: "1px solid #5B8DD9" }}>
+          <p className="text-sm leading-relaxed" style={{ color: "#2C3E6B" }}>
+            Si esto dolió, no tienen que resolverlo ahora. Lo importante no es ganar una discusión; 
+            es cuidar la próxima conversación. Elijan una sola pregunta, busquen un momento tranquilo 
+            y dense permiso para pausar si algo se vuelve demasiado intenso.
+          </p>
+        </div>
+
         {/* Pregunta de cierre */}
         <div className="rounded-2xl p-8 text-center" style={{ background: "#1A274A" }}>
           <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: "#E8B850" }}>
@@ -379,17 +407,45 @@ export default function MapaConjunto() {
             Compartir por WhatsApp
           </button>
           {sessionId && (
-            <button
-              onClick={copiarCodigo}
-              className="py-3 px-5 rounded-xl text-sm font-semibold transition-all"
-              style={copiado
-                ? { background: "#C6EFCE", color: "#276221" }
-                : { background: "#F0F2F5", color: "#1A274A" }}
-            >
-              {copiado ? "¡Copiado!" : "Copiar código"}
-            </button>
+            <>
+              <button
+                onClick={copiarCodigo}
+                className="py-3 px-5 rounded-xl text-sm font-semibold transition-all"
+                style={copiado
+                  ? { background: "#C6EFCE", color: "#276221" }
+                  : { background: "#F0F2F5", color: "#1A274A" }}
+              >
+                {copiado ? "¡Copiado!" : "Copiar código"}
+              </button>
+              <button
+                onClick={() => window.open(`/api/pdf/pareja?session_id=${sessionId}`, "_blank")}
+                className="py-3 px-5 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-90"
+                style={{ background: "#1A274A" }}
+              >
+                Descargar PDF
+              </button>
+            </>
           )}
         </div>
+
+        {/* Contención para persona B */}
+        {persona === "B" && (
+          <div className="rounded-2xl p-6 text-center" style={{ background: "#EBF3FB" }}>
+            <p className="text-sm font-semibold mb-2" style={{ color: "#1A274A" }}>
+              ¿Necesitas un momento para procesar lo que viste?
+            </p>
+            <p className="text-xs mb-4" style={{ color: "#444455" }}>
+              Tenemos un espacio para ti antes de continuar la conversación.
+            </p>
+            <button
+              onClick={() => router.push("/pareja/contencion")}
+              className="px-6 py-3 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-90"
+              style={{ background: "#5B8DD9" }}
+            >
+              Ir a mi espacio →
+            </button>
+          </div>
+        )}
 
         <div className="text-center pb-8">
           <button onClick={() => router.push("/")}

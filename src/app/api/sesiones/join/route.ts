@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
       data: {
         email_B: email_B,
         password_B: passwordHash,
-        estado: sesion.respuestas && Object.keys(sesion.respuestas as object).length > 0 ? "ambos_listos" : "encuesta_B",
+        estado: sesion.respuestas && Object.keys(sesion.respuestas as object).length > 0 ? "waiting_other_response" : "in_progress",
       },
     });
 

@@ -19,9 +19,20 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Sesión no encontrada" }, { status: 404 });
     }
 
-    const dataToUpdate = persona === "A" 
+    const dataToUpdate: any = persona === "A" 
       ? { hipotesis_A: hipotesis } 
       : { hipotesis_B: hipotesis };
+
+    // Actualizar estado después de guardar hipótesis
+    const currentSesion = sesion;
+    const ambasHipotesis = Boolean(
+      (persona === "A" ? hipotesis : currentSesion.hipotesis_A) &&
+      (persona === "B" ? hipotesis : currentSesion.hipotesis_B)
+    );
+    
+    if (!ambasHipotesis) {
+      dataToUpdate.estado = "waiting_hypotheses";
+    }
 
     await prisma.sesion.update({
       where: { id: session_id },

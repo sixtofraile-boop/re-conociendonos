@@ -13,10 +13,9 @@ function getCookie(name: string): string | null {
 }
 
 const ZONA_COLORES: Record<string, { bg: string; text: string }> = {
-  "Zona crítica":     { bg: "#FFC7CE", text: "#9C0006" },
-  "Zona sensible":    { bg: "#FFE0B2", text: "#E65100" },
-  "Zona de atención": { bg: "#FFEB9C", text: "#9C6500" },
-  "Zona sólida":      { bg: "#C6EFCE", text: "#276221" },
+  "Zona crítica":    { bg: "#FFC7CE", text: "#9C0006" },
+  "Zona de cuidado": { bg: "#FFEB9C", text: "#9C6500" },
+  "Zona tranquila":  { bg: "#C6EFCE", text: "#276221" },
 };
 
 export default function ResultadosIndividual() {
@@ -25,6 +24,7 @@ export default function ResultadosIndividual() {
   const [resultado, setResultado] = useState<{
     global: { hist: number; act: number; var: number };
     dimensiones: ResultadoDimension[];
+    recomienda_profesional: boolean;
   } | null>(null);
   const [nombre, setNombre] = useState<string | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
@@ -73,8 +73,7 @@ export default function ResultadosIndividual() {
 
   const estados = resultado.dimensiones.map((d) => d.estado);
   const mensaje = mensajeCierre(estados);
-  const rojos = estados.filter((e) => e === "ROJO").length;
-  const mostrarProfesional = rojos >= 3;
+  const mostrarProfesional = resultado.recomienda_profesional;
 
   const getPercepcionPareja = () => {
     let masAlta = 0, masBaja = 0;
@@ -228,6 +227,13 @@ export default function ResultadosIndividual() {
             className="flex-1 py-3 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-90"
             style={{ background: "#25D366" }}>
             Compartir por WhatsApp
+          </button>
+          <button
+            onClick={() => window.open(`/api/pdf/individual?session_id=${sessionId}`, "_blank")}
+            className="flex-1 py-3 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-90"
+            style={{ background: "#1A274A" }}
+          >
+            Descargar PDF
           </button>
         </div>
 

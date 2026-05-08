@@ -18,6 +18,23 @@ export default function ParejaPage() {
   const [codigoCreado, setCodigoCreado] = useState<string | null>(null);
   const [copiado, setCopiado] = useState(false);
   const [isRecuperar, setIsRecuperar] = useState(false);
+  const [consentimientos, setConsentimientos] = useState([false, false, false, false, false, false]);
+
+  const CONSENTIMIENTOS = [
+    "Entiendo que esto no es un test psicológico ni un diagnóstico clínico.",
+    "Entiendo que los resultados reflejan percepciones personales del momento, no verdades objetivas sobre la relación.",
+    "Acepto que esta herramienta no es adecuada en contextos de violencia, coerción o riesgo emocional grave.",
+    "Acepto la política de privacidad y el manejo confidencial de mis datos personales.",
+    "Consiento que mis respuestas anonimizadas puedan usarse para mejorar la herramienta durante la fase beta.",
+    "Entiendo que si algo de esta experiencia nos sobrepasa, podemos buscar apoyo profesional.",
+  ];
+
+  const toggleConsentimiento = (i: number) => {
+    setConsentimientos(prev => prev.map((v, idx) => idx === i ? !v : v));
+  };
+
+  const todosAceptados = consentimientos.every(Boolean);
+
   const [emailRecuperar, setEmailRecuperar] = useState("");
   const [passwordRecuperar, setPasswordRecuperar] = useState("");
   const [nombreRecuperar, setNombreRecuperar] = useState("");
@@ -36,6 +53,10 @@ export default function ParejaPage() {
       setError("Las contraseñas no coinciden");
       return;
     }
+    if (!todosAceptados) {
+      setError("Debes aceptar todos los consentimientos para continuar");
+      return;
+    }
     setLoading(true);
     setError("");
 
@@ -43,7 +64,7 @@ export default function ParejaPage() {
       const res = await fetch("/api/sesiones", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ version: "pareja", email_A: email, password_A: password }),
+        body: JSON.stringify({ version: "pareja", nombre_A: nombre, email_A: email, password_A: password }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Error al crear sesión");
@@ -51,7 +72,8 @@ export default function ParejaPage() {
       document.cookie = `session_id=${data.sesion.id}; path=/; max-age=2592000`;
       document.cookie = `persona=A; path=/; max-age=2592000`;
       document.cookie = `nombre=${encodeURIComponent(nombre)}; path=/; max-age=2592000`;
-      setCodigoCreado(data.sesion.id);
+      // Usar token_invitacion en lugar de session.id
+      setCodigoCreado(data.sesion.token || data.sesion.id);
     } catch (e: any) {
       setError(e.message);
     } finally {
@@ -83,7 +105,7 @@ export default function ParejaPage() {
       if (data.sesion.respuestas?.A) {
         router.push("/pareja/resultados");
       } else {
-        router.push("/pareja/encuesta");
+        router.push("/pareja/intro");
       }
     } catch (e: any) {
       setError(e.message);
@@ -113,12 +135,13 @@ export default function ParejaPage() {
       if (persona) document.cookie = `persona=${persona}; path=/; max-age=2592000`;
       document.cookie = `nombre=${encodeURIComponent(nombreRecuperar)}; path=/; max-age=2592000`;
 
-      // Redirigir según el estado de la sesión
+      // Redirigir según el estado de la sesión (spec 13.2)
       const estado = sesion.estado;
-      if (estado === "mapa_conjunto") {
+      if (estado === "reveal_ready" || estado === "reveal_opened") {
         router.push("/pareja/mapa");
-      } else if (persona === "A" && (estado === "resultados_A" || estado === "esperando_B")) {
-        router.push("/pareja/resultados");
+      } else if (["in_progress", "waiting_other_response", "both_tests_completed", "waiting_hypotheses"].includes(estado)) {
+        const tieneRespuestas = sesion.respuestas?.[persona || "A"] && Array.isArray(sesion.respuestas[persona || "A"]) && sesion.respuestas[persona || "A"].length > 0;
+        router.push(tieneRespuestas ? "/pareja/resultados" : "/pareja/encuesta");
       } else {
         router.push("/pareja/encuesta");
       }
@@ -138,8 +161,8 @@ export default function ParejaPage() {
 
   const compartirWhatsApp = () => {
     if (!codigoCreado) return;
-    const url = `${window.location.origin}/pareja`;
-    const msg = `Hola 💙\n\nHice un test sobre nuestra relación y me hizo pensar bastante. Me gustaría que lo hiciéramos juntos para ver nuestro mapa completo.\n\n→ Entra aquí: ${url}\n→ Selecciona "Unirse a sesión"\n→ Usa este código: *${codigoCreado}*\n\nRE-CONOCIÉNDONOS`;
+    const inviteUrl = `${window.location.origin}/pareja/invite?token=${codigoCreado}`;
+    const msg = `Hola 💙\n\nHice Mi Mirada y me dejó pensando en nosotros. Me gustaría invitarte a construir Nuestro Mapa juntos, solo si te hace sentido. No es para juzgarnos; es para conversar con más cuidado sobre lo que nos importa.\n\n→ Entra aquí: ${inviteUrl}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`);
   };
 
@@ -158,7 +181,7 @@ export default function ParejaPage() {
           {/* Código */}
           <div className="bg-white rounded-2xl p-6 shadow-sm text-center">
             <p className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: "#888" }}>
-              Código de sesión
+              Token de invitación
             </p>
             <div className="px-4 py-4 rounded-xl mb-4 font-mono text-lg font-bold tracking-wider break-all"
               style={{ background: "#F0F2F5", color: "#1A274A" }}>
@@ -172,7 +195,7 @@ export default function ParejaPage() {
                   ? { background: "#C6EFCE", color: "#276221" }
                   : { background: "#1A274A", color: "#fff" }}
               >
-                {copiado ? "¡Copiado!" : "Copiar código"}
+                {copiado ? "¡Copiado!" : "Copiar token"}
               </button>
               <button
                 onClick={compartirWhatsApp}
@@ -199,7 +222,7 @@ export default function ParejaPage() {
           </div>
 
           <button
-            onClick={() => router.push("/pareja/encuesta")}
+            onClick={() => router.push("/pareja/intro")}
             className="w-full py-4 rounded-xl font-bold text-white transition-all hover:opacity-90"
             style={{ background: "#5B8DD9" }}
           >
@@ -344,6 +367,27 @@ export default function ParejaPage() {
               </div>
             )}
 
+            {/* Consentimientos — solo al crear sesión */}
+            {!isJoin && (
+              <div className="space-y-3 pt-2">
+                <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "#444455" }}>
+                  Antes de continuar, confirma lo siguiente:
+                </p>
+                {CONSENTIMIENTOS.map((texto, i) => (
+                  <label key={i} className="flex items-start gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={consentimientos[i]}
+                      onChange={() => toggleConsentimiento(i)}
+                      className="mt-0.5 h-4 w-4 rounded"
+                      style={{ accentColor: "#5B8DD9" }}
+                    />
+                    <span className="text-xs leading-relaxed" style={{ color: "#444455" }}>{texto}</span>
+                  </label>
+                ))}
+              </div>
+            )}
+
             {error && (
               <p className="text-sm px-3 py-2 rounded-lg" style={{ background: "#FFC7CE", color: "#9C0006" }}>
                 {error}
@@ -352,7 +396,7 @@ export default function ParejaPage() {
 
             <button
               onClick={isJoin ? handleJoin : handleCreate}
-              disabled={loading}
+              disabled={loading || (!isJoin && !todosAceptados)}
               className="w-full py-3 rounded-xl font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50"
               style={{ background: "#5B8DD9" }}
             >
@@ -373,7 +417,7 @@ export default function ParejaPage() {
           )}
 
           <p className="text-xs text-center mt-4" style={{ color: "#888" }}>
-            Al continuar aceptas los términos de privacidad.
+            Tus datos son confidenciales.
           </p>
         </div>
 

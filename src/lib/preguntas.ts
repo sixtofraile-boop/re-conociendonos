@@ -1,60 +1,60 @@
 import { Dimension, RespuestaPareja, RespuestaIndividual } from "./types";
 
-export const PREGUNTAS_PAREJA: { id: number; texto: string; dimension: Dimension }[] = [
-  { id: 1, dimension: "AMISTAD", texto: "¿Disfruto genuinamente estar con mi pareja... y cómo siento que ella/él disfruta estar conmigo?" },
-  { id: 2, dimension: "AMISTAD", texto: "¿Puedo ser yo mismo/a sin filtros en esta relación... y cuánto siento que mi pareja también puede serlo?" },
-  { id: 3, dimension: "AMISTAD", texto: "¿Nuestras conversaciones van más allá de lo funcional y cotidiano... y cuánto siento que mi pareja también busca o cree eso?" },
-  { id: 4, dimension: "AMISTAD", texto: "¿Me siento en confianza real con mi pareja... y cuánto siente que ella/él confía genuinamente en mí?" },
-  { id: 5, dimension: "AMISTAD", texto: "¿Hay liviandad, humor y momentos de disfrute de mi parte... y cuánto percibo ese mismo disfrute en mi pareja cuando estamos juntos?" },
-  { id: 6, dimension: "AMISTAD", texto: "Cuando algo importante me pasa, ¿mi pareja es de las primeras personas en las que pienso... y cuánto creo que ella/él siente lo mismo?" },
-  { id: 7, dimension: "AMISTAD", texto: "¿Siento que aporto a que seamos un equipo real en lo cotidiano... y cuánto percibo ese mismo aporte en mi pareja?" },
-  
-  { id: 8, dimension: "DESEO", texto: "¿Siento deseo genuino por mi pareja... y cómo percibo que ella/él me desea a mí?" },
-  { id: 9, dimension: "DESEO", texto: "¿Me siento atraído/a físicamente por mi pareja... y cuánto siento que esa atracción es recíproca?" },
-  { id: 10, dimension: "DESEO", texto: "¿Tomo iniciativa en nuestra vida sexual... y cuánto percibo iniciativa genuina también en mi pareja?" },
-  { id: 11, dimension: "DESEO", texto: "¿Estoy satisfecho/a con nuestra vida sexual... y cuánto siento que mi pareja también lo está?" },
-  { id: 12, dimension: "DESEO", texto: "¿Puedo expresar lo que deseo o necesito sexualmente... y cuánto siento que mi pareja hace lo mismo conmigo?" },
-  { id: 13, dimension: "DESEO", texto: "Cuando estamos íntimamente, ¿siento que me entrego y me conecto de verdad... y cuánto percibo esa misma conexión en mi pareja?" },
+export const PREGUNTAS_PAREJA: { id: number; yo: string; percepcion: string; dimension: Dimension }[] = [
+  { id: 1,  dimension: "AMISTAD",    yo: "¿Disfruto genuinamente estar con mi pareja?",                                                            percepcion: "¿Cómo siento que ella/él disfruta estar conmigo?" },
+  { id: 2,  dimension: "AMISTAD",    yo: "¿Puedo ser yo mismo/a sin filtros en esta relación?",                                                    percepcion: "¿Cuánto siento que mi pareja también puede serlo?" },
+  { id: 3,  dimension: "AMISTAD",    yo: "¿Nuestras conversaciones van más allá de lo funcional y cotidiano?",                                     percepcion: "¿Cuánto siento que mi pareja también busca o valora eso?" },
+  { id: 4,  dimension: "AMISTAD",    yo: "¿Me siento en confianza real con mi pareja?",                                                            percepcion: "¿Cuánto siento que ella/él confía genuinamente en mí?" },
+  { id: 5,  dimension: "AMISTAD",    yo: "¿Hay liviandad, humor y momentos de disfrute de mi parte?",                                             percepcion: "¿Cuánto percibo ese mismo disfrute en mi pareja cuando estamos juntos?" },
+  { id: 6,  dimension: "AMISTAD",    yo: "Cuando algo importante me pasa, ¿mi pareja es de las primeras personas en las que pienso?",             percepcion: "¿Cuánto creo que ella/él siente lo mismo conmigo?" },
+  { id: 7,  dimension: "AMISTAD",    yo: "¿Siento que aporto a que seamos un equipo real en lo cotidiano?",                                       percepcion: "¿Cuánto percibo ese mismo aporte en mi pareja?" },
 
-  { id: 14, dimension: "PROYECTO", texto: "¿Siento que quiero construir algo real con mi pareja... y cuánto percibo en ella/él esa misma intención?" },
-  { id: 15, dimension: "PROYECTO", texto: "¿Me siento parte del proyecto de vida de mi pareja... y cuánto siento que ella/él se siente parte del mío?" },
-  { id: 16, dimension: "PROYECTO", texto: "¿He puesto de mi parte para conversar y construir lo que queremos juntos... y cuánto percibo esa disposición también en mi pareja?" },
-  { id: 17, dimension: "PROYECTO", texto: "¿Mis decisiones del día a día van en línea con lo que queremos como pareja... y cuánto percibo esa coherencia también en ella/él?" },
-  { id: 18, dimension: "PROYECTO", texto: "¿Este proyecto de relación me hace sentido hoy... y cuánto siento que a mi pareja también se lo hace?" },
+  { id: 8,  dimension: "DESEO",      yo: "¿Siento deseo genuino por mi pareja?",                                                                  percepcion: "¿Cómo percibo que ella/él me desea a mí?" },
+  { id: 9,  dimension: "DESEO",      yo: "¿Me siento atraído/a físicamente por mi pareja?",                                                       percepcion: "¿Cuánto siento que esa atracción es recíproca?" },
+  { id: 10, dimension: "DESEO",      yo: "¿Tomo iniciativa en nuestra vida íntima?",                                                              percepcion: "¿Cuánto percibo iniciativa genuina también en mi pareja?" },
+  { id: 11, dimension: "DESEO",      yo: "¿Estoy satisfecho/a con nuestra vida íntima?",                                                          percepcion: "¿Cuánto siento que mi pareja también lo está?" },
+  { id: 12, dimension: "DESEO",      yo: "¿Puedo expresar lo que deseo o necesito íntimamente?",                                                  percepcion: "¿Cuánto siento que mi pareja hace lo mismo conmigo?" },
+  { id: 13, dimension: "DESEO",      yo: "Cuando estamos íntimamente, ¿siento que me entrego y me conecto de verdad?",                            percepcion: "¿Cuánto percibo esa misma conexión en mi pareja?" },
 
-  { id: 19, dimension: "COMPROMISO", texto: "¿Me hago cargo de cuidar y sostener esta relación más allá del ánimo del momento... y cuánto percibo ese mismo cuidado en mi pareja?" },
-  { id: 20, dimension: "COMPROMISO", texto: "¿Soy coherente entre lo que digo y lo que hago en esta relación... y cuánto percibo esa coherencia en mi pareja?" },
-  { id: 21, dimension: "COMPROMISO", texto: "¿Estoy dispuesto/a a hacer cambios genuinos por el bienestar de la relación... y cuánto siento esa disposición también en ella/él?" },
-  { id: 22, dimension: "COMPROMISO", texto: "Cuando aparecen problemas, ¿me hago cargo de mi parte sin evitar ni culpar... y cuánto percibo esa misma responsabilidad en mi pareja?" },
-  { id: 23, dimension: "COMPROMISO", texto: "¿Elijo activamente a mi pareja incluso en los momentos difíciles... y cuánto siento que ella/él también me elige?" },
+  { id: 14, dimension: "PROYECTO",   yo: "¿Siento que quiero construir algo real con mi pareja?",                                                  percepcion: "¿Cuánto percibo en ella/él esa misma intención?" },
+  { id: 15, dimension: "PROYECTO",   yo: "¿Me siento parte del proyecto de vida de mi pareja?",                                                    percepcion: "¿Cuánto siento que ella/él se siente parte del mío?" },
+  { id: 16, dimension: "PROYECTO",   yo: "¿He puesto de mi parte para conversar y construir lo que queremos juntos?",                              percepcion: "¿Cuánto percibo esa disposición también en mi pareja?" },
+  { id: 17, dimension: "PROYECTO",   yo: "¿Mis decisiones del día a día van en línea con lo que queremos como pareja?",                            percepcion: "¿Cuánto percibo esa coherencia también en ella/él?" },
+  { id: 18, dimension: "PROYECTO",   yo: "¿Este proyecto de relación me hace sentido hoy?",                                                        percepcion: "¿Cuánto siento que a mi pareja también se lo hace?" },
+
+  { id: 19, dimension: "COMPROMISO", yo: "¿Me hago cargo de cuidar y sostener esta relación más allá del ánimo del momento?",                     percepcion: "¿Cuánto percibo ese mismo cuidado en mi pareja?" },
+  { id: 20, dimension: "COMPROMISO", yo: "¿Soy coherente entre lo que digo y lo que hago en esta relación?",                                      percepcion: "¿Cuánto percibo esa coherencia en mi pareja?" },
+  { id: 21, dimension: "COMPROMISO", yo: "¿Estoy dispuesto/a a hacer cambios genuinos por el bienestar de la relación?",                          percepcion: "¿Cuánto siento esa disposición también en ella/él?" },
+  { id: 22, dimension: "COMPROMISO", yo: "Cuando aparecen problemas, ¿me hago cargo de mi parte sin evitar ni culpar?",                           percepcion: "¿Cuánto percibo esa misma responsabilidad en mi pareja?" },
+  { id: 23, dimension: "COMPROMISO", yo: "¿Elijo activamente a mi pareja incluso en los momentos difíciles?",                                     percepcion: "¿Cuánto siento que ella/él también me elige?" },
 ];
 
 export const PREGUNTAS_INDIVIDUAL: { id: number; texto: string; dimension: Dimension }[] = [
-  { id: 1, dimension: "AMISTAD", texto: "¿Disfruto genuinamente estar con mi pareja, o compartir tiempo juntos se ha vuelto más obligación que elección?" },
-  { id: 2, dimension: "AMISTAD", texto: "¿Puedo ser completamente yo mismo/a con mi pareja, o hay partes mías que guardo o escondo cuando estoy con ella/él?" },
-  { id: 3, dimension: "AMISTAD", texto: "¿Nuestras conversaciones van más allá de lo funcional y cotidiano, o siento que nos hemos quedado sin temas reales?" },
-  { id: 4, dimension: "AMISTAD", texto: "¿Siento que existe una confianza genuina entre nosotros, o hay zonas donde me cuido o me contengo?" },
-  { id: 5, dimension: "AMISTAD", texto: "¿Cuándo fue la última vez que sentí que mi pareja realmente me veía — no el rol que cumplo, sino quién soy?" },
-  { id: 6, dimension: "AMISTAD", texto: "Si pienso en mi pareja como persona — más allá de la relación — ¿me sigue gustando quién es?" },
+  { id: 1, dimension: "AMISTAD", texto: "¿Disfruto genuinamente estar con mi pareja, o el tiempo juntos se ha vuelto más rutina que elección?" },
+  { id: 2, dimension: "AMISTAD", texto: "¿Puedo ser yo mismo/a con mi pareja, o hay partes de mí que suelo guardar?" },
+  { id: 3, dimension: "AMISTAD", texto: "¿Nuestras conversaciones van más allá de lo funcional, o siento que hemos dejado de hablar de lo que realmente importa?" },
+  { id: 4, dimension: "AMISTAD", texto: "¿Siento confianza genuina en esta relación, o hay temas donde me cuido demasiado?" },
+  { id: 5, dimension: "AMISTAD", texto: "¿Siento que mi pareja me ve de verdad —más allá del rol que cumplo— o me siento poco reconocido/a?" },
+  { id: 6, dimension: "AMISTAD", texto: "Si miro a mi pareja como persona, más allá de la relación, ¿me sigue gustando quién es?" },
 
-  { id: 7, dimension: "DESEO", texto: "¿Siento deseo genuino por mi pareja, o esa energía se ha ido apagando con el tiempo?" },
-  { id: 8, dimension: "DESEO", texto: "¿Me siento elegido/a y deseado/a por mi pareja, o siento que soy más una presencia que una elección activa?" },
-  { id: 9, dimension: "DESEO", texto: "¿Hay iniciativa real de ambos lados en nuestra vida íntima, o siento que la energía la pone más uno que el otro?" },
-  { id: 10, dimension: "DESEO", texto: "¿Estoy satisfecho/a con nuestra vida sexual, o hay algo que siento pero no he podido decir?" },
-  { id: 11, dimension: "DESEO", texto: "¿Hay algo que deseo o necesito en este ámbito que nunca he podido poner en palabras con mi pareja?" },
-  { id: 12, dimension: "DESEO", texto: "Cuando pienso en intimidad con mi pareja, lo que siento es ganas o es más bien indiferencia — o incluso evitación?" },
+  { id: 7, dimension: "DESEO", texto: "¿Siento deseo genuino por mi pareja, o esa energía se ha ido apagando?" },
+  { id: 8, dimension: "DESEO", texto: "¿Me siento elegido/a y deseado/a, o siento que mi presencia se da por sentada?" },
+  { id: 9, dimension: "DESEO", texto: "¿Hay iniciativa y búsqueda de ambos en nuestra vida íntima, o siento que la energía la sostiene más uno que el otro?" },
+  { id: 10, dimension: "DESEO", texto: "¿Estoy satisfecho/a con nuestra vida íntima, o hay algo importante que no he podido decir?" },
+  { id: 11, dimension: "DESEO", texto: "¿Hay algo que deseo o necesito en la intimidad que aún no he podido poner en palabras?" },
+  { id: 12, dimension: "DESEO", texto: "Cuando pienso en la intimidad con mi pareja, ¿qué aparece con más fuerza: ganas, distancia, indiferencia o evitación?" },
 
-  { id: 13, dimension: "PROYECTO", texto: "¿Siento que queremos construir cosas parecidas como pareja, o noto que vamos hacia lugares distintos?" },
-  { id: 14, dimension: "PROYECTO", texto: "¿Me siento parte del mundo y los sueños de mi pareja, y siento que ella/él es parte de los míos?" },
-  { id: 15, dimension: "PROYECTO", texto: "¿Hay algo que quiero para mi vida y siento que esta relación no me lo permite — o que tendría que sacrificar para seguir en ella?" },
-  { id: 16, dimension: "PROYECTO", texto: "¿Nuestras decisiones del día a día reflejan que somos un equipo, o siento que cada uno va más por su lado?" },
-  { id: 17, dimension: "PROYECTO", texto: "¿Este proyecto de relación me hace sentido hoy — o me doy cuenta de que le estoy buscando el sentido que ya no encuentro?" },
+  { id: 13, dimension: "PROYECTO", texto: "¿Siento que queremos construir cosas parecidas, o noto que empezamos a imaginar caminos distintos?" },
+  { id: 14, dimension: "PROYECTO", texto: "¿Me siento parte del mundo y los sueños de mi pareja, y siento que mi pareja tiene lugar en los míos?" },
+  { id: 15, dimension: "PROYECTO", texto: "¿Hay algo importante para mi vida que no encuentra suficiente espacio en esta relación?" },
+  { id: 16, dimension: "PROYECTO", texto: "¿Nuestras decisiones cotidianas reflejan que somos equipo, o siento que cada uno avanza más por su lado?" },
+  { id: 17, dimension: "PROYECTO", texto: "¿Este proyecto de relación me hace sentido hoy, o siento que necesito volver a preguntarme para qué seguimos juntos?" },
 
-  { id: 18, dimension: "COMPROMISO", texto: "¿Me hago cargo de cuidar esta relación con acciones concretas, o noto que voy más en piloto automático?" },
-  { id: 19, dimension: "COMPROMISO", texto: "¿Elijo a mi pareja activamente — incluso en los momentos difíciles — o siento que la elección se ha vuelto más costumbre que decisión?" },
-  { id: 20, dimension: "COMPROMISO", texto: "¿Existe coherencia entre lo que me digo sobre esta relación y lo que realmente hago en ella?" },
-  { id: 21, dimension: "COMPROMISO", texto: "Cuando aparecen problemas, ¿los enfrento y me hago cargo de mi parte, o tiendo a evitarlos, minimizarlos o culpar al otro?" },
-  { id: 22, dimension: "COMPROMISO", texto: "Si hoy tuviese que elegir a esta persona de nuevo — sabiendo lo que sé — ¿la elegiría?" },
+  { id: 18, dimension: "COMPROMISO", texto: "¿Cuido esta relación con acciones concretas, o noto que voy más en piloto automático?" },
+  { id: 19, dimension: "COMPROMISO", texto: "¿Elijo activamente a mi pareja, incluso en momentos difíciles, o siento que sigo más por costumbre que por decisión?" },
+  { id: 20, dimension: "COMPROMISO", texto: "¿Hay coherencia entre lo que me digo sobre esta relación y lo que realmente hago?" },
+  { id: 21, dimension: "COMPROMISO", texto: "Cuando aparecen problemas, ¿me hago cargo de mi parte o tiendo a evitar, minimizar o culpar?" },
+  { id: 22, dimension: "COMPROMISO", texto: "Si hoy mirara esta relación con honestidad, ¿siento que volvería a elegir a mi pareja?" },
 ];
 
 export const PREGUNTAS_CONVERSACION: Record<Dimension, string[]> = {
@@ -63,16 +63,16 @@ export const PREGUNTAS_CONVERSACION: Record<Dimension, string[]> = {
     "¿Qué echas de menos de cómo éramos antes?",
     "¿Hay algo que ya no me cuentas y antes sí me contabas?",
     "¿Cuándo fue la última vez que reímos de verdad juntos?",
-    "¿Sientes que te conozco de verdad... o que me quedé con una versión antigua de ti?",
-    "¿Qué parte de ti siente que no puede mostrarse conmigo?"
+    "¿Sientes que te conozco de verdad o que me quedé con una versión antigua de ti?",
+    "¿Hay alguna parte de ti que te cuesta mostrar conmigo y que te gustaría que yo pudiera recibir mejor?"
   ],
   DESEO: [
     "¿Qué te hace sentir más deseado/a por mí?",
     "¿Qué no estamos diciendo en este ámbito?",
-    "¿Qué necesitas de mí para volver a sentir esa chispa?",
+    "¿Qué necesitas de mí para volver a sentir cercanía íntima?",
     "¿Hay algo que deseas y nunca has podido decirme?",
-    "¿En qué momento dejaste de sentirte elegido/a por mí?",
-    "¿Qué te acerca a mí... y qué te aleja?"
+    "¿Hay momentos en que has dejado de sentirte elegido/a por mí? ¿Qué necesitarías que yo entienda?",
+    "¿Qué te acerca a mí y qué te aleja?"
   ],
   PROYECTO: [
     "¿Estamos yendo hacia el mismo lugar o solo caminando juntos?",
@@ -83,7 +83,7 @@ export const PREGUNTAS_CONVERSACION: Record<Dimension, string[]> = {
     "¿Qué significaría para ti que este proyecto funcionara de verdad?"
   ],
   COMPROMISO: [
-    "¿Dónde sientes que estoy fallando en sostener esto?",
+    "¿Dónde sientes que necesitas más presencia o cuidado de mi parte?",
     "¿Qué necesitas ver en mí para sentir más compromiso?",
     "¿Hay algo que prometimos y dejamos de cumplir?",
     "¿En qué momento sientes que elijo otras cosas antes que la relación?",
@@ -150,7 +150,7 @@ export const FRASES_GATILLO_PAREJA: Record<`${Dimension}|${"ROJO" | "AMARILLO" |
   },
   "PROYECTO|VERDE": {
     frase1: "Comparten una visión similar de hacia dónde van. Hay alineación en lo que quieren construir.",
-    frase2: "Buen momento para hacer explícito lo que hasta ahora han asumió. Decirlo en voz alta lo hace más real."
+    frase2: "Buen momento para hacer explícito lo que hasta ahora han asumido. Decirlo en voz alta lo hace más real."
   },
   "PROYECTO|AMARILLO": {
     frase1: "Hay diferencias en cómo están viviendo el proyecto. Puede que cada uno esté imaginando futuros sin compartirlos.",
@@ -161,7 +161,7 @@ export const FRASES_GATILLO_PAREJA: Record<`${Dimension}|${"ROJO" | "AMARILLO" |
     frase2: "Este dominio necesita una conversación profunda: ¿hacia dónde quiere ir cada uno y qué lugar ocupa el otro?"
   },
   "COMPROMISO|VERDE": {
-    frase1: "El compromiso muestra solidez. Ambos parecen estar elegido activamente esta relación.",
+    frase1: "El compromiso muestra solidez. Ambos parecen estar eligiendo activamente esta relación.",
     frase2: "Buen momento para reconocerse mutuamente lo que cada uno está sosteniendo."
   },
   "COMPROMISO|AMARILLO": {

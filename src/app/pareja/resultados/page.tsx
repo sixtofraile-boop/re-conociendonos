@@ -13,10 +13,9 @@ function getCookie(name: string): string | null {
 }
 
 const ZONA_COLORES: Record<string, { bg: string; text: string }> = {
-  "Zona crítica":     { bg: "#FFC7CE", text: "#9C0006" },
-  "Zona sensible":    { bg: "#FFE0B2", text: "#E65100" },
-  "Zona de atención": { bg: "#FFEB9C", text: "#9C6500" },
-  "Zona sólida":      { bg: "#C6EFCE", text: "#276221" },
+  "Zona crítica":    { bg: "#FFC7CE", text: "#9C0006" },
+  "Zona de cuidado": { bg: "#FFEB9C", text: "#9C6500" },
+  "Zona tranquila":  { bg: "#C6EFCE", text: "#276221" },
 };
 
 export default function ResultadosPareja() {
@@ -46,7 +45,7 @@ export default function ResultadosPareja() {
         if (respuestas && respuestas[per]) {
           setResultado(calcularResultadosIndividualPareja(respuestas[per]));
         }
-        if (data.sesion?.estado === "mapa_conjunto") {
+        if (data.sesion?.estado === "both_tests_completed" || data.sesion?.estado === "reveal_ready") {
           setParejaLista(true);
         }
       })
@@ -58,7 +57,7 @@ export default function ResultadosPareja() {
       try {
         const res = await fetch(`/api/sesiones?session_id=${sid}`);
         const data = await res.json();
-        if (data.sesion?.estado === "mapa_conjunto") {
+        if (data.sesion?.estado === "both_tests_completed" || data.sesion?.estado === "reveal_ready") {
           setParejaLista(true);
           clearInterval(interval);
         }
@@ -77,7 +76,8 @@ export default function ResultadosPareja() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ session_id: sessionId, persona, hipotesis }),
       });
-      router.push("/pareja/mapa");
+      // Ir al acuerdo antes del reveal
+      router.push("/pareja/acuerdo");
     } catch (e) {
       console.error(e);
     } finally {
@@ -108,8 +108,7 @@ export default function ResultadosPareja() {
     );
   }
 
-  const rojos = resultado.dimensiones.filter((d) => d.estado === "ROJO").length;
-  const mostrarProfesional = rojos >= 3;
+  const mostrarProfesional = resultado.recomienda_profesional;
 
   return (
     <div className="min-h-screen" style={{ background: "#F8F8F8" }}>

@@ -2,6 +2,9 @@
 
 ## Estado: ✅ LIVE en Producción — https://re-conociendonos.vercel.app
 
+## Última actualización
+08/05/2026 — PDFs implementados (Mi Mirada + Nuestro Mapa)
+
 ## Stack Tecnológico
 - **Frontend**: Next.js 16.2.4 (App Router) + TypeScript + Tailwind CSS
 - **Backend**: Next.js API Routes
@@ -14,13 +17,15 @@
 ```
 re-conociendonos-app/
 ├── prisma/
-│   ├── schema.prisma          # Schema PostgreSQL con url = env("DATABASE_URL")
+│   ├── schema.prisma          # Schema PostgreSQL (token_invitacion, acuerdo_aceptado_A/B)
 │   └── dev.db                 # SQLite local (no usar en producción)
 ├── src/
 │   ├── app/
 │   │   ├── page.tsx                    # Landing completa (hero + 4 dim + 2 caminos)
 │   │   ├── pareja/
-│   │   │   ├── page.tsx                # Crear/unirse + pantalla con código + WhatsApp
+│   │   │   ├── page.tsx                # Crear/unirse + token seguro + WhatsApp
+│   │   │   ├── invitacion/page.tsx      # Página donde B acepta invitación con token
+│   │   │   ├── acuerdo/page.tsx        # Acuerdo obligatorio antes del reveal
 │   │   │   ├── encuesta/page.tsx       # 23 preguntas + código visible en header
 │   │   │   ├── resultados/page.tsx     # Mi mapa individual + hipótesis
 │   │   │   └── mapa/page.tsx           # Reveal intencional + mapa conjunto
@@ -28,18 +33,30 @@ re-conociendonos-app/
 │   │   │   ├── page.tsx                # Registro con nombre + WhatsApp
 │   │   │   ├── encuesta/page.tsx       # 22 preguntas
 │   │   │   └── resultados/page.tsx     # Resultado + CTA "Invitar pareja"
-│   │   └── api/sesiones/
-│   │       ├── route.ts                # GET sin passwords / POST crear sesión
-│   │       ├── join/route.ts
-│   │       ├── respuestas/route.ts
-│   │       └── hipotesis/route.ts
+│   │   └── api/
+│   │       ├── sesiones/
+│   │       │   ├── route.ts                # GET/POST (token seguro, 13 estados)
+│   │       │   ├── invite/route.ts        # GET/POST validar y aceptar invitación
+│   │       │   ├── join/route.ts
+│   │       │   ├── respuestas/route.ts
+│   │       │   ├── hipotesis/route.ts
+│   │       │   └── acuerdo/route.ts       # Guardar aceptación de acuerdo
+│   │       ├── pdf/
+│   │       │   ├── individual/route.ts    # Generar PDF Mi Mirada
+│   │       │   └── pareja/route.ts       # Generar PDF Nuestro Mapa
+│   │       └── email/
+│   │           └── invite/route.ts      # Enviar invitación por correo (Resend)
 │   └── lib/
 │       ├── types.ts
 │       ├── preguntas.ts
 │       ├── calcular.ts
-│       └── prisma.ts              # PrismaNeonHttp adapter
+│       ├── prisma.ts              # PrismaNeonHttp adapter
+│       └── pdf/
+│           ├── estilos.ts
+│           ├── mi-mirada.tsx         # Componente PDF Mi Mirada (9 secciones)
+│           └── nuestro-mapa.tsx     # Componente PDF Nuestro Mapa (9 secciones)
 ├── vercel.json
-├── .env                           # DATABASE_URL = Neon PostgreSQL
+├── .env                           # DATABASE_URL, RESEND_API_KEY
 ├── .env.example
 ├── PROGRESO.md
 └── package.json
@@ -48,6 +65,25 @@ re-conociendonos-app/
 ---
 
 ## Funcionalidades Implementadas (100%)
+
+### Sistema de Invitación Segura ✓
+- Token único de 32 caracteres hex (crypto.randomBytes)
+- Expiración automática a 7 días
+- Ruta `/api/sesiones/invite` para validar tokens
+- Página `/pareja/invite` para que B acepte la invitación
+- Migración de `session_id` a `token_invitacion` seguro
+- Estados de sesión expandidos (13 estados según spec 13.2)
+- Integración con Resend para emails transaccionales
+- Ruta `/api/email/invite` para envío de invitaciones por correo
+- Página de invitación con formulario para B (email + contraseña)
+
+### Acuerdo de Conversación Obligatorio ✓
+- Página `/pareja/acuerdo` con 5 puntos obligatorios
+- Checkbox múltiples que deben aceptarse todos
+- API `/api/sesiones/acuerdo` para guardar aceptación
+- Campos `acuerdo_aceptado_A` y `acuerdo_aceptado_B` en BD
+- Verificación antes del reveal en mapa conjunto
+- Redirección automática a `/pareja/acuerdo` si falta aceptación
 
 ### Identidad Visual ✓
 - Paleta navy `#1A274A` como primario en todos los headers
@@ -112,6 +148,14 @@ re-conociendonos-app/
 - Se activa con 3+ dimensiones en ROJO (ajustado según spec)
 - Copy no alarmista (fiel al slide 8 del journey)
 - Link a contacto profesional
+
+### Generación de PDFs ✓
+- `@react-pdf/renderer` v4 instalado
+- **PDF Mi Mirada** (`/api/pdf/individual`): resumen global, 4 dimensiones, reflexiones, mensaje de cierre
+- **PDF Nuestro Mapa** (`/api/pdf/pareja`): tabla sistémica A/B, lectura por dimensión, hipótesis, preguntas de conversación
+- Componentes en `src/lib/pdf/` (estilos.ts, mi-mirada.tsx, nuestro-mapa.tsx)
+- Botones "Descargar PDF" en resultados individual y mapa conjunto
+- Validación de cookie y session_id en ambas APIs
 
 ### Seguridad ✓
 - Contraseñas hasheadas con bcrypt
@@ -194,13 +238,28 @@ npm run dev -- --port 3002
 
 ---
 
+## Correcciones sesión 08/05/2026 (auditoría pack final v1)
+
+24. ✓ Escala incorrecta "1 al 7" → "1 al 10" en encuesta individual
+25. ✓ Colores inconsistentes (purple/slate) reemplazados por paleta de marca en encuesta individual
+26. ✓ Persona B saltaba directo a mapa sin pasar por hipótesis ni acuerdo — ahora va a resultados igual que A
+27. ✓ Focos de atención: `nivel_act` recibía `puntaje` en vez del nivel real — corregido
+28. ✓ Estados de sesión alineados con spec 13.2 (invitation_created, in_progress, waiting_other_response, both_tests_completed, waiting_hypotheses, waiting_reveal_agreement, reveal_ready, reveal_opened, expired)
+29. ✓ Nombre de B derivado de email — ahora se pide nombre en formulario de invitación
+30. ✓ Mensaje post-reveal agregado (spec 6.5)
+31. ✓ Schema actualizado con nombre_A y nombre_B
+32. ✓ Preguntas de conversación COMPROMISO actualizadas (lenguaje sin culpa)
+33. ✓ Endpoint PATCH /api/sesiones agregado para actualizar estados
+34. ✓ Hipótesis ahora redirige a acuerdo antes del reveal
+
 ## Pendiente (próxima sesión)
 
 ### No implementado (requiere infra)
 1. Rate limiting (requiere Redis o store externo)
 2. Sincronización en tiempo real (WebSocket) — el polling actual cubre el caso de uso básico
 
----
-
-## Última actualización
-29/04/2026 — sin pendientes funcionales conocidos
+### Mejoras futuras sugeridas
+1. Migrar a modelos de datos separados User/SesionMiMirada/SesionNuestroMapa/Participante según spec
+2. Implementar seguimiento beta automatizado (correos día 3, 7, 14, 21/30)
+3. Sistema de pago único para Nuestro Mapa
+4. Export CSV de respuestas para análisis beta

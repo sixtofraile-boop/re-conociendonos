@@ -14,6 +14,22 @@ export default function IndividualPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [isRecuperar, setIsRecuperar] = useState(false);
+  const [consentimientos, setConsentimientos] = useState([false, false, false, false, false, false]);
+
+  const CONSENTIMIENTOS = [
+    "Entiendo que esto no es un test psicológico ni un diagnóstico clínico.",
+    "Entiendo que los resultados reflejan mis percepciones del momento, no verdades objetivas sobre la relación.",
+    "Acepto que esta herramienta no es adecuada en contextos de violencia, coerción o riesgo emocional grave.",
+    "Acepto la política de privacidad y el manejo confidencial de mis datos personales.",
+    "Consiento que mis respuestas anonimizadas puedan usarse para mejorar la herramienta durante la fase beta.",
+    "Entiendo que si algo de esta experiencia me sobrepasa, puedo buscar apoyo profesional.",
+  ];
+
+  const toggleConsentimiento = (i: number) => {
+    setConsentimientos(prev => prev.map((v, idx) => idx === i ? !v : v));
+  };
+
+  const todosAceptados = consentimientos.every(Boolean);
   const [emailRecuperar, setEmailRecuperar] = useState("");
   const [passwordRecuperar, setPasswordRecuperar] = useState("");
   const [errorRecuperar, setErrorRecuperar] = useState("");
@@ -31,6 +47,10 @@ export default function IndividualPage() {
       setError("Las contraseñas no coinciden");
       return;
     }
+    if (!todosAceptados) {
+      setError("Debes aceptar todos los consentimientos para continuar");
+      return;
+    }
     setLoading(true);
     setError("");
 
@@ -38,14 +58,14 @@ export default function IndividualPage() {
       const res = await fetch("/api/sesiones", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ version: "individual", email_A: email, password_A: password }),
+        body: JSON.stringify({ version: "individual", nombre_A: nombre, email_A: email, password_A: password }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Error al crear sesión");
 
       document.cookie = `session_id=${data.sesion.id}; path=/; max-age=2592000`;
       document.cookie = `nombre=${encodeURIComponent(nombre)}; path=/; max-age=2592000`;
-      router.push("/individual/encuesta");
+      router.push("/individual/intro");
     } catch (e: any) {
       setError(e.message);
     } finally {
@@ -177,6 +197,25 @@ export default function IndividualPage() {
               />
             </div>
 
+            {/* Consentimientos */}
+            <div className="space-y-3 pt-2">
+              <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "#444455" }}>
+                Antes de continuar, confirma lo siguiente:
+              </p>
+              {CONSENTIMIENTOS.map((texto, i) => (
+                <label key={i} className="flex items-start gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={consentimientos[i]}
+                    onChange={() => toggleConsentimiento(i)}
+                    className="mt-0.5 h-4 w-4 rounded"
+                    style={{ accentColor: "#028090" }}
+                  />
+                  <span className="text-xs leading-relaxed" style={{ color: "#444455" }}>{texto}</span>
+                </label>
+              ))}
+            </div>
+
             {error && (
               <p className="text-sm px-3 py-2 rounded-lg" style={{ background: "#FFC7CE", color: "#9C0006" }}>
                 {error}
@@ -185,7 +224,7 @@ export default function IndividualPage() {
 
             <button
               onClick={handleCreate}
-              disabled={loading}
+              disabled={loading || !todosAceptados}
               className="w-full py-3 rounded-xl font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50"
               style={{ background: "#028090" }}
             >
@@ -194,7 +233,7 @@ export default function IndividualPage() {
           </div>
 
           <p className="text-xs text-center mt-4" style={{ color: "#888" }}>
-            Al continuar aceptas los términos de privacidad. Tu resultado es personal y confidencial.
+            Tu resultado es personal y confidencial.
           </p>
         </div>
 

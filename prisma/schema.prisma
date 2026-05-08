@@ -8,19 +8,25 @@ datasource db {
 
 model Sesion {
   id                  String   @id @default(cuid())
-  version             String
-  estado              String
+  version             String    // "pareja" | "individual"
+  estado              String    // Ver estados en spec 13.2
+  nombre_A            String?
+  nombre_B            String?
   email_A             String?
   email_B             String?
   password_A          String?
   password_B          String?
+  token_invitacion    String?   @unique // Token seguro para invitación
+  token_expira        DateTime? // Expiración 7 días
+  acuerdo_aceptado_A  Boolean?  @default(false) // Acuerdo antes del reveal
+  acuerdo_aceptado_B  Boolean?  @default(false) // Acuerdo antes del reveal
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
   
   respuestas          Json?
   
   hipotesis_A         String?
-  hipotesis_B        String?
+  hipotesis_B         String?
   
   quien_ha_respondido String?
 }
