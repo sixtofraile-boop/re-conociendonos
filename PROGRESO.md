@@ -3,7 +3,7 @@
 ## Estado: ✅ LIVE en Producción — https://re-conociendonos.vercel.app
 
 ## Última actualización
-08/05/2026 — Ritual conversación, dimensión prioritaria, metadata, paleta
+08/05/2026 — Correcciones auditoría spec v2.2: cálculo Nuestro Mapa, privacidad A/B, percepciones, commitment 3, copies
 
 ## Stack Tecnológico
 - **Frontend**: Next.js 16.2.4 (App Router) + TypeScript + Tailwind CSS
@@ -251,6 +251,30 @@ npm run dev -- --port 3002
 32. ✓ Preguntas de conversación COMPROMISO actualizadas (lenguaje sin culpa)
 33. ✓ Endpoint PATCH /api/sesiones agregado para actualizar estados
 34. ✓ Hipótesis ahora redirige a acuerdo antes del reveal
+
+## Correcciones sesión 08/05/2026 (auditoría profunda spec v2.2 — fase 2)
+
+### Crítico
+35. ✓ **Fórmula Nuestro Mapa** — `calcularResultadosPareja` ahora promedia los 4 valores (A hist_yo, B hist_yo, A hist_par, B hist_par) por dimensión, en vez de solo 2 (A hist_yo + B hist_par). Spec 10.3.
+36. ✓ **Sort por puntaje_dim** — `ordenarDimensiones` ahora ordena primariamente por `puntaje_dim` antes de aplicar reglas de desempate (estado, brecha, variación, nivel). Spec 11.3.
+37. ✓ **Privacidad A/B** — GET `/api/sesiones` filtra `respuestas` crudas según cookie `persona`. A no ve respuestas de B ni viceversa. Spec 13.1. El resultado conjunto se sirve desde `resultado_json.pareja`.
+38. ✓ **Caché resultado pareja** — `respuestas/route.ts` ahora computa y cachea `resultado_json.pareja` al guardar respuestas de A o B.
+39. ✓ **Mapa conjunto** — `pareja/mapa/page.tsx` ahora lee desde `resultado_json.pareja` en vez de recalcular desde respuestas crudas de ambos.
+
+### Alto
+40. ✓ **Percepción "¿Percibo..."** — Las 23 preguntas de percepción en `preguntas.ts` corregidas a formato `"¿Percibo..."` en vez de `"¿Cuánto siento...?"` / `"¿Cómo siento...?"`. Spec 9.3. También corregidas Q3, Q5, Q19.
+41. ✓ **Commitment 3** — `"Hablaré desde yo siento"` → `"Hablaremos desde yo veo, yo siento y yo necesito"`. Spec 6.4.
+42. ✓ **calcularResultadosIndividualPareja** — Ahora incluye `hist_par`/`act_par` (percepción de pareja) en nivel_hist/nivel_act/brecha. Ya no usa solo `hist_yo`/`act_yo`.
+
+### Medio
+43. ✓ **Landing bajada** — `"Este es el mapa para encontrarlas"` → `"Una experiencia guiada para mirar tu relación y abrir una conversación cuidada."`. Spec 6.1.
+44. ✓ **"crees" → "imaginas"** — Encuesta individual ahora usa `"cómo imaginas que tu pareja podría vivir esto"` en vez de `"cómo crees que respondería tu pareja"`. Spec 3.1.
+45. ✓ **Transición hipótesis** — `hipotesis/route.ts` ahora transiciona a `waiting_reveal_agreement` cuando ambas hipótesis están completas.
+46. ✓ **Estados acuerdo** — `aceptar_acuerdo` en `estados.ts` ahora permite `both_tests_completed` como estado de entrada.
+47. ✓ **Mensajes de espera** — Mapa página muestra `"Tu pareja ya completó su parte. Falta tu mirada..."` o `"Tu parte está lista..."` según quién haya respondido. Spec 13.3.
+
+### Build
+48. ✓ Build limpio — 29 páginas, 0 errores, commit `dedad0d` pusheado a main.
 
 ## Pendiente (próxima sesión)
 
