@@ -39,6 +39,8 @@ export async function POST(request: NextRequest) {
     
     if (!ambasHipotesis) {
       dataToUpdate.estado = "waiting_hypotheses";
+    } else {
+      dataToUpdate.estado = "waiting_reveal_agreement";
     }
 
     await prisma.sesion.update({

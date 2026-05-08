@@ -20,7 +20,7 @@ type Accion = "responder" | "guardar_hipotesis" | "aceptar_acuerdo" | "ver_mapa"
 const TRANSICIONES: Record<Accion, EstadoSesion[]> = {
   responder: ["in_progress", "waiting_other_response"],
   guardar_hipotesis: ["both_tests_completed", "waiting_hypotheses"],
-  aceptar_acuerdo: ["waiting_hypotheses", "waiting_reveal_agreement"],
+  aceptar_acuerdo: ["both_tests_completed", "waiting_hypotheses", "waiting_reveal_agreement"],
   ver_mapa: ["reveal_ready", "reveal_opened"],
   enviar_invitacion: ["invitation_created"],
 };

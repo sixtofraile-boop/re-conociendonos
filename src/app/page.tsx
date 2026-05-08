@@ -21,7 +21,7 @@ export default function Home() {
             Hay conversaciones que tu relación necesita tener.
           </h1>
           <p className="text-xl md:text-2xl font-light mb-3" style={{ color: "#B8CCEE" }}>
-            Este es el mapa para encontrarlas.
+            Una experiencia guiada para mirar tu relación y abrir una conversación cuidada.
           </p>
           <p className="mb-10 text-sm" style={{ color: "#88AACC" }}>
             Las 4 dimensiones de una pareja · Las preguntas que nos faltan

@@ -76,7 +76,7 @@ export default function AcuerdoConversacion() {
             {[
               { id: 1, text: "Usaremos este mapa como espejo, no como arma.", state: acepta1, set: setAcepta1 },
               { id: 2, text: "No buscaremos ganar una discusión ni demostrar quién tiene razón.", state: acepta2, set: setAcepta2 },
-              { id: 3, text: "Hablaré desde \"yo siento\" y \"yo necesito\", evitando \"tú siempre\" o \"tú nunca\".", state: acepta3, set: setAcepta3 },
+              { id: 3, text: "Hablaremos desde \"yo veo\", \"yo siento\" y \"yo necesito\", evitando \"tú siempre\" o \"tú nunca\".", state: acepta3, set: setAcepta3 },
               { id: 4, text: "Podemos pausar si algo duele demasiado.", state: acepta4, set: setAcepta4 },
               { id: 5, text: "Elegiremos una sola conversación para empezar.", state: acepta5, set: setAcepta5 },
               { id: 6, text: "Recordaremos que esto no mide la verdad, solo ordena percepciones.", state: acepta6, set: setAcepta6 },

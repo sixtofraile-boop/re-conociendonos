@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { validarEstado } from "@/lib/estados";
-import { calcularResultadosIndividual, calcularResultadosIndividualPareja } from "@/lib/calcular";
+import { calcularResultadosIndividual, calcularResultadosIndividualPareja, calcularResultadosPareja } from "@/lib/calcular";
 
 export async function POST(request: NextRequest) {
   try {
@@ -56,7 +56,10 @@ export async function POST(request: NextRequest) {
     } else if (persona === "A" || persona === "B") {
       const resultA = calcularResultadosIndividualPareja(nuevasMap["A"] || []);
       const resultB = calcularResultadosIndividualPareja(nuevasMap["B"] || []);
-      resultadoCache = { A: resultA, B: resultB };
+      const resultPareja = nuevasMap["A"] && nuevasMap["B"]
+        ? calcularResultadosPareja(nuevasMap["A"], nuevasMap["B"])
+        : null;
+      resultadoCache = { A: resultA, B: resultB, pareja: resultPareja };
     }
 
     await prisma.sesion.update({

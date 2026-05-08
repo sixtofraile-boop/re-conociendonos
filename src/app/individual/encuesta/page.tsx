@@ -142,7 +142,7 @@ export default function EncuestaIndividual() {
             <div className="p-4 rounded-lg mt-4" style={{ background: "#EBF3FB" }}>
               <p className="font-medium mb-2" style={{ color: "#1A274A" }}>Cómo responder:</p>
               <ul className="list-disc list-inside space-y-1" style={{ color: "#2C3E6B" }}>
-                <li>Para cada pregunta hay DOS respuestas: Tu nota (1 al 10) y cómo crees que respondería tu pareja (Más alto / Igual / Más bajo)</li>
+                <li>Para cada pregunta hay DOS respuestas: Tu nota (1 al 10) y cómo imaginas que tu pareja respondería (Más alto / Igual / Más bajo)</li>
                 <li>No lo pienses demasiado — la primera respuesta suele ser la más honesta.</li>
                 <li>Las preguntas están mezcladas — los resultados mostrarán el mapa por dimensión.</li>
               </ul>
@@ -223,7 +223,7 @@ export default function EncuestaIndividual() {
           </div>
 
           <div>
-            <p className="font-medium mb-4" style={{ color: "#1A274A" }}>¿Cómo crees que respondería tu pareja esta misma pregunta?</p>
+            <p className="font-medium mb-4" style={{ color: "#1A274A" }}>Desde tu percepción, ¿cómo imaginas que tu pareja podría vivir esto?</p>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <p className="text-xs mb-2" style={{ color: "#888" }}>Histórico</p>

@@ -3,7 +3,7 @@
 ## Estado: ✅ LIVE en Producción — https://re-conociendonos.vercel.app
 
 ## Última actualización
-08/05/2026 — Lenguaje mi pareja, acuerdo 6 checkbox, CTA landing, desempate dimensiones
+08/05/2026 — Ritual conversación, dimensión prioritaria, metadata, paleta
 
 ## Stack Tecnológico
 - **Frontend**: Next.js 16.2.4 (App Router) + TypeScript + Tailwind CSS

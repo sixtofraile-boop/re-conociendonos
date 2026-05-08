@@ -42,18 +42,18 @@ export default function MapaConjunto() {
     fetch(`/api/sesiones?session_id=${sid}`)
       .then((res) => res.json())
       .then((data) => {
-        const respuestas = data.sesion?.respuestas;
         setQuienRespondio(data.sesion?.quien_ha_respondido ?? null);
         
         // Verificar si ambos aceptaron el acuerdo
         const acuerdoA = data.sesion?.acuerdo_aceptado_A;
         const acuerdoB = data.sesion?.acuerdo_aceptado_B;
         
-        if (respuestas && respuestas.A && respuestas.B) {
-          setResultado(calcularResultadosPareja(respuestas.A, respuestas.B));
+        // Usar resultado conjunto cacheados desde resultado_json (spec: A no ve respuestas crudas de B ni viceversa)
+        const parejaResult = data.sesion?.resultado_json?.pareja;
+        if (parejaResult) {
+          setResultado(parejaResult);
           setSesion(data.sesion);
           
-          // Si no han aceptado el acuerdo, redirigir
           if (!acuerdoA || !acuerdoB) {
             router.push("/pareja/acuerdo");
             return;
@@ -98,11 +98,12 @@ export default function MapaConjunto() {
             ESPERANDO A TU PAREJA
           </p>
           <h1 className="text-3xl font-bold text-white mb-4">
-            Tu parte está lista
+            {quienRespondio !== persona ? "Tu pareja ya completó su parte" : "Tu parte está lista"}
           </h1>
           <p className="mb-10" style={{ color: "#B8CCEE" }}>
-            El mapa conjunto se abre cuando los dos hayan respondido.<br />
-            Comparte el código con tu pareja para que pueda unirse.
+            {quienRespondio !== persona
+              ? "Falta tu mirada para poder construir Nuestro Mapa. Responde las preguntas para que podamos abrir el mapa juntos."
+              : "Nuestro Mapa se abrirá solo cuando ambos hayan respondido. Comparte el código con tu pareja para que pueda unirse."}
           </p>
 
           {sessionId && (

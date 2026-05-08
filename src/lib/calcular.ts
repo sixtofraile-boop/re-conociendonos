@@ -20,6 +20,7 @@ const PESO_ESTADO: Record<Estado, number> = { ROJO: 3, AMARILLO: 2, VERDE: 1 };
 
 function ordenarDimensiones(dims: ResultadoDimension[]): void {
   dims.sort((a, b) => {
+    if (a.puntaje !== b.puntaje) return b.puntaje - a.puntaje;
     const pesoA = PESO_ESTADO[a.estado];
     const pesoB = PESO_ESTADO[b.estado];
     if (pesoA !== pesoB) return pesoB - pesoA;
@@ -99,10 +100,19 @@ export function calcularResultadosPareja(
     const sum = (arr:RespuestaPareja[], field: keyof RespuestaPareja) => 
       arr.reduce((acc, r) => acc + (Number(r[field]) * 10), 0);
 
-    const yo_hist = pregDimA.length ? sum(pregDimA, "hist_yo") / pregDimA.length : 0;
-    const yo_act = pregDimA.length ? sum(pregDimA, "act_yo") / pregDimA.length : 0;
-    const par_hist = pregDimB.length ? sum(pregDimB, "hist_par") / pregDimB.length : 0;
-    const par_act = pregDimB.length ? sum(pregDimB, "act_par") / pregDimB.length : 0;
+    const aHistYo = pregDimA.length ? sum(pregDimA, "hist_yo") / pregDimA.length : 0;
+    const aActYo = pregDimA.length ? sum(pregDimA, "act_yo") / pregDimA.length : 0;
+    const aHistPar = pregDimA.length ? sum(pregDimA, "hist_par") / pregDimA.length : 0;
+    const aActPar = pregDimA.length ? sum(pregDimA, "act_par") / pregDimA.length : 0;
+    const bHistYo = pregDimB.length ? sum(pregDimB, "hist_yo") / pregDimB.length : 0;
+    const bActYo = pregDimB.length ? sum(pregDimB, "act_yo") / pregDimB.length : 0;
+    const bHistPar = pregDimB.length ? sum(pregDimB, "hist_par") / pregDimB.length : 0;
+    const bActPar = pregDimB.length ? sum(pregDimB, "act_par") / pregDimB.length : 0;
+
+    const yo_hist = (aHistYo + bHistYo) / 2;
+    const yo_act = (aActYo + bActYo) / 2;
+    const par_hist = (aHistPar + bHistPar) / 2;
+    const par_act = (aActPar + bActPar) / 2;
 
     const nivel_hist = (yo_hist + par_hist) / 2;
     const nivel_act = (yo_act + par_act) / 2;
@@ -123,9 +133,14 @@ export function calcularResultadosPareja(
       const rA = r;
       const rB = respuestasB.find(b => b.pregunta_id === r.pregunta_id);
       if (!rB) return { id: r.pregunta_id, puntaje: 0 };
-      const n_act = ((rA.act_yo * 10) + (rB.act_par * 10)) / 2;
-      const v = n_act - (((rA.hist_yo * 10) + (rB.hist_par * 10)) / 2);
-      const br = Math.abs(rA.act_yo * 10 - rB.act_par * 10);
+      const actSelf = ((rA.act_yo + rB.act_yo) / 2) * 10;
+      const actPar = ((rA.act_par + rB.act_par) / 2) * 10;
+      const histSelf = ((rA.hist_yo + rB.hist_yo) / 2) * 10;
+      const histPar = ((rA.hist_par + rB.hist_par) / 2) * 10;
+      const n_act = (actSelf + actPar) / 2;
+      const n_hist = (histSelf + histPar) / 2;
+      const v = n_act - n_hist;
+      const br = Math.abs(actSelf - actPar);
       return { id: r.pregunta_id, puntaje: (100 - n_act) + Math.abs(v) * 1.5 + br * 0.5 };
     });
 
@@ -136,12 +151,16 @@ export function calcularResultadosPareja(
       const rA = respuestasA.find(r => r.pregunta_id === p.id);
       const rB = respuestasB.find(r => r.pregunta_id === p.id);
       if (!rA || !rB) return null;
+      const actSelf = ((rA.act_yo + rB.act_yo) / 2) * 10;
+      const actPar = ((rA.act_par + rB.act_par) / 2) * 10;
+      const histSelf = ((rA.hist_yo + rB.hist_yo) / 2) * 10;
+      const histPar = ((rA.hist_par + rB.hist_par) / 2) * 10;
       return {
         pregunta_id: p.id,
         texto: preg.yo,
-        nivel_act: ((rA.act_yo * 10) + (rB.act_par * 10)) / 2,
-        brecha: Math.abs(rA.act_yo * 10 - rB.act_par * 10),
-        variacion: ((rA.act_yo * 10) + (rB.act_par * 10)) / 2 - ((rA.hist_yo * 10) + (rB.hist_par * 10)) / 2,
+        nivel_act: (actSelf + actPar) / 2,
+        brecha: Math.abs(actSelf - actPar),
+        variacion: ((actSelf + actPar) / 2) - ((histSelf + histPar) / 2),
         rank: i + 1
       };
     }).filter((f): f is FocoPregunta => f !== null);
@@ -293,22 +312,27 @@ export function calcularResultadosIndividualPareja(
     
     const yo_hist = pregDim.length ? pregDim.reduce((acc, r) => acc + r.hist_yo * 10, 0) / pregDim.length : 0;
     const yo_act = pregDim.length ? pregDim.reduce((acc, r) => acc + r.act_yo * 10, 0) / pregDim.length : 0;
-    const variacion = yo_act - yo_hist;
+    const par_hist = pregDim.length ? pregDim.reduce((acc, r) => acc + r.hist_par * 10, 0) / pregDim.length : 0;
+    const par_act = pregDim.length ? pregDim.reduce((acc, r) => acc + r.act_par * 10, 0) / pregDim.length : 0;
+    const variacion_yo = yo_act - yo_hist;
     
-    const nivel_act = yo_act;
-    const nivel_hist = yo_hist;
-    const brecha = 0;
+    const nivel_act = (yo_act + par_act) / 2;
+    const nivel_hist = (yo_hist + par_hist) / 2;
+    const variacion = nivel_act - nivel_hist;
+    const brecha = Math.abs(yo_act - par_act);
     
     const estado = semaforoPareja(nivel_act, variacion, brecha);
     const zonaResult = zona(estado);
     const criterio = criterioTexto(variacion, nivel_act, brecha);
     
-    const puntaje = (100 - nivel_act) + Math.abs(variacion) * 1.5;
+    const puntaje = (100 - nivel_act) + Math.abs(variacion) * 1.5 + brecha * 0.5;
     
-    const puntajesPregunta: { id: number; puntaje: number; nivel_act: number; variacion: number }[] = pregDim.map(r => {
-      const n_act = r.act_yo * 10;
-      const v = n_act - r.hist_yo * 10;
-      return { id: r.pregunta_id, puntaje: (100 - n_act) + Math.abs(v) * 1.5, nivel_act: n_act, variacion: v };
+    const puntajesPregunta: { id: number; puntaje: number; nivel_act: number; variacion: number; brecha: number }[] = pregDim.map(r => {
+      const n_act = ((r.act_yo + r.act_par) / 2) * 10;
+      const n_hist = ((r.hist_yo + r.hist_par) / 2) * 10;
+      const v = n_act - n_hist;
+      const br = Math.abs(r.act_yo * 10 - r.act_par * 10);
+      return { id: r.pregunta_id, puntaje: (100 - n_act) + Math.abs(v) * 1.5 + br * 0.5, nivel_act: n_act, variacion: v, brecha: br };
     });
     
     puntajesPregunta.sort((a, b) => b.puntaje - a.puntaje);
@@ -319,7 +343,7 @@ export function calcularResultadosIndividualPareja(
         pregunta_id: p.id,
         texto: preg.yo,
         nivel_act: p.nivel_act,
-        brecha: 0,
+        brecha: p.brecha,
         variacion: p.variacion,
         rank: i + 1
       };

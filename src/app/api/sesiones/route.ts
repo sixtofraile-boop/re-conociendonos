@@ -77,6 +77,18 @@ export async function GET(request: NextRequest) {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { password_A, password_B, token_invitacion, ...sesionSegura } = sesion;
+
+  // Privacidad A/B: filtrar respuestas crudas según la persona que consulta (spec 13.1)
+  const persona = request.cookies.get("persona")?.value;
+  if (sesion.version === "pareja" && persona && sesionSegura.respuestas) {
+    const respuestas = sesionSegura.respuestas as Record<string, unknown>;
+    if (persona === "A") {
+      sesionSegura.respuestas = { A: respuestas.A } as any;
+    } else if (persona === "B") {
+      sesionSegura.respuestas = { B: respuestas.B } as any;
+    }
+  }
+
   return NextResponse.json({ sesion: sesionSegura });
 }
 
