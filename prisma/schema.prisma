@@ -34,4 +34,5 @@ model Sesion {
   whatsapp_B          String?
   consentimientos_A   Json?
   resultado_json      Json?
+  feedback            Json?
 }

@@ -18,6 +18,19 @@ export default function ParejaPage() {
   const [codigoCreado, setCodigoCreado] = useState<string | null>(null);
   const [copiado, setCopiado] = useState(false);
   const [isRecuperar, setIsRecuperar] = useState(false);
+  const [mostrarEmail, setMostrarEmail] = useState(false);
+  const [emailPareja, setEmailPareja] = useState("");
+  const [mensajeTono, setMensajeTono] = useState<"calido" | "directo" | "reparador">("calido");
+  const [mensajeEditado, setMensajeEditado] = useState("");
+  const [enviandoEmail, setEnviandoEmail] = useState(false);
+  const [emailEnviado, setEmailEnviado] = useState(false);
+  const [errorEmail, setErrorEmail] = useState("");
+
+  const MENSAJES_INVITACION = {
+    calido: "Hice Mi Mirada y me dejó pensando en nosotros. Me gustaría invitarte a construir Nuestro Mapa juntos, solo si te hace sentido. No es para juzgarnos; es para conversar con más cuidado sobre lo que nos importa.",
+    directo: "Me gustaría que hagamos esta experiencia juntos. Creo que puede ayudarnos a mirar qué estamos viviendo bien, qué necesita cuidado y por dónde empezar a conversar.",
+    reparador: "Sé que hay cosas que no han sido fáciles entre nosotros. No quiero usar esto para reclamarte ni para tener la razón. Me gustaría que nos ayude a hablar con más cuidado, si a ti también te hace sentido.",
+  };
   const [consentimientos, setConsentimientos] = useState([false, false, false, false, false, false]);
 
   const CONSENTIMIENTOS = [
@@ -175,8 +188,33 @@ export default function ParejaPage() {
   const compartirWhatsApp = () => {
     if (!codigoCreado) return;
     const inviteUrl = `${window.location.origin}/pareja/invite?token=${codigoCreado}`;
-    const msg = `Hola 💙\n\nHice Mi Mirada y me dejó pensando en nosotros. Me gustaría invitarte a construir Nuestro Mapa juntos, solo si te hace sentido. No es para juzgarnos; es para conversar con más cuidado sobre lo que nos importa.\n\n→ Entra aquí: ${inviteUrl}`;
+    const msg = `${mensajeEditado || MENSAJES_INVITACION[mensajeTono]}\n\n→ Entra aquí: ${inviteUrl}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`);
+  };
+
+  const enviarPorEmail = async () => {
+    if (!codigoCreado || !emailPareja) return;
+    setEnviandoEmail(true);
+    setErrorEmail("");
+    try {
+      const res = await fetch("/api/email/invite", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          session_id: document.cookie.match(/session_id=([^;]+)/)?.[1],
+          email_B: emailPareja,
+          mensaje_personalizado: mensajeEditado || MENSAJES_INVITACION[mensajeTono],
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      setEmailEnviado(true);
+      setMostrarEmail(false);
+    } catch (e: any) {
+      setErrorEmail(e.message || "No pudimos enviar el correo");
+    } finally {
+      setEnviandoEmail(false);
+    }
   };
 
   // ── Pantalla: código de sesión creado ─────────────────────────────────────
@@ -218,6 +256,79 @@ export default function ParejaPage() {
                 Enviar por WhatsApp
               </button>
             </div>
+            <button
+              onClick={() => setMostrarEmail(!mostrarEmail)}
+              className="w-full mt-3 py-3 rounded-xl text-sm font-semibold"
+              style={{ background: "#EBF3FB", color: "#1A274A" }}
+            >
+              {mostrarEmail ? "Cancelar" : "Enviar por correo"}
+            </button>
+            {mostrarEmail && (
+              <div className="mt-4 pt-4 border-t space-y-3" style={{ borderColor: "#EEE" }}>
+                <div>
+                  <label className="block text-xs font-medium mb-1 text-left" style={{ color: "#444455" }}>
+                    Correo de tu pareja <span style={{ color: "#C0504D" }}>*</span>
+                  </label>
+                  <input
+                    type="email"
+                    value={emailPareja}
+                    onChange={(e) => setEmailPareja(e.target.value)}
+                    className="w-full px-4 py-2.5 border rounded-xl text-sm focus:outline-none focus:ring-2"
+                    style={{ borderColor: "#CCCCCC", color: "#1A274A" }}
+                    placeholder="pareja@email.com"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium mb-1 text-left" style={{ color: "#444455" }}>
+                    Tono del mensaje
+                  </label>
+                  <div className="flex gap-2">
+                    {(["calido", "directo", "reparador"] as const).map((tono) => (
+                      <button
+                        key={tono}
+                        onClick={() => { setMensajeTono(tono); setMensajeEditado(MENSAJES_INVITACION[tono]); }}
+                        className="flex-1 py-2 rounded-lg text-xs font-semibold transition-all"
+                        style={mensajeTono === tono
+                          ? { background: "#1A274A", color: "#fff" }
+                          : { background: "#F0F2F5", color: "#444455" }}
+                      >
+                        {tono === "calido" ? "Cálido" : tono === "directo" ? "Directo" : "Reparador"}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium mb-1 text-left" style={{ color: "#444455" }}>
+                    Mensaje (editable)
+                  </label>
+                  <textarea
+                    value={mensajeEditado || MENSAJES_INVITACION[mensajeTono]}
+                    onChange={(e) => setMensajeEditado(e.target.value)}
+                    className="w-full px-4 py-2.5 border rounded-xl text-sm focus:outline-none focus:ring-2 resize-none"
+                    style={{ borderColor: "#CCCCCC", color: "#1A274A" }}
+                    rows={3}
+                  />
+                </div>
+                {errorEmail && (
+                  <p className="text-sm px-3 py-2 rounded-lg" style={{ background: "#FFC7CE", color: "#9C0006" }}>
+                    {errorEmail}
+                  </p>
+                )}
+                <button
+                  onClick={enviarPorEmail}
+                  disabled={enviandoEmail || !emailPareja}
+                  className="w-full py-2.5 rounded-xl text-sm font-semibold text-white transition-all disabled:opacity-50"
+                  style={{ background: "#5B8DD9" }}
+                >
+                  {enviandoEmail ? "Enviando..." : "Enviar invitación por correo"}
+                </button>
+              </div>
+            )}
+            {emailEnviado && (
+              <p className="text-sm mt-3 px-3 py-2 rounded-lg" style={{ background: "#C6EFCE", color: "#276221" }}>
+                ¡Invitación enviada por correo!
+              </p>
+            )}
           </div>
 
           {/* Instrucciones para la pareja */}

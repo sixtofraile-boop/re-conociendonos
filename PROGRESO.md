@@ -3,7 +3,7 @@
 ## Estado: ✅ LIVE en Producción — https://re-conociendonos.vercel.app
 
 ## Última actualización
-08/05/2026 — Deploy exitoso tras correcciones de auditoría v2.2 (BD sincronizada, build limpio, producción OK)
+08/05/2026 — Persistencia consentimientos, cache resultado_json, validación estados, sanitización errores
 
 ## Stack Tecnológico
 - **Frontend**: Next.js 16.2.4 (App Router) + TypeScript + Tailwind CSS

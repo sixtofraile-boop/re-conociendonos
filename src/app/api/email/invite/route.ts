@@ -9,7 +9,7 @@ const resend = process.env.RESEND_API_KEY
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { session_id, mensaje_personalizado } = body;
+    const { session_id, email_B, mensaje_personalizado } = body;
 
     if (!session_id) {
       return NextResponse.json({ error: "Session ID requerido" }, { status: 400 });
@@ -29,8 +29,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Sesión no encontrada" }, { status: 404 });
     }
 
-    if (!sesion.email_B) {
+    const emailDestino = email_B || sesion.email_B;
+    if (!emailDestino) {
       return NextResponse.json({ error: "No hay email de pareja configurado" }, { status: 400 });
+    }
+
+    // Si se proporcionó email_B en el cuerpo, guardarlo en la sesión
+    if (email_B && email_B !== sesion.email_B) {
+      await prisma.sesion.update({
+        where: { id: session_id },
+        data: { email_B: email_B },
+      });
     }
 
     if (!resend) {
@@ -46,7 +55,7 @@ export async function POST(request: NextRequest) {
 
     const { data, error } = await resend.emails.send({
       from: "Re-conociendonos <hola@re-conociendonos.com>",
-      to: [sesion.email_B],
+      to: [emailDestino],
       subject: "Te han invitado a construir Nuestro Mapa",
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">

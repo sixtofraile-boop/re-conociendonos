@@ -447,6 +447,12 @@ export default function MapaConjunto() {
           </div>
         )}
 
+        <button onClick={() => router.push("/pareja/feedback")}
+          className="w-full py-3 rounded-xl text-sm font-semibold transition-all"
+          style={{ color: "#028090", background: "#EBF3FB" }}>
+          Dar feedback sobre la experiencia
+        </button>
+
         <div className="text-center pb-8">
           <button onClick={() => router.push("/")}
             className="text-sm px-6 py-3 rounded-xl" style={{ color: "#888" }}>

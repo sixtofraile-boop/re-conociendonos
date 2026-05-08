@@ -262,6 +262,10 @@ export default function ResultadosIndividual() {
         </div>
 
         <div className="text-center pb-8">
+          <button onClick={() => router.push("/individual/feedback")}
+            className="text-sm px-6 py-3 rounded-xl font-medium mt-2" style={{ color: "#028090" }}>
+            Dar feedback sobre la experiencia
+          </button>
           <button onClick={() => router.push("/")}
             className="text-sm px-6 py-3 rounded-xl" style={{ color: "#888" }}>
             Volver al inicio
