@@ -18,7 +18,7 @@ export type EstadoSesion =
 type Accion = "responder" | "guardar_hipotesis" | "aceptar_acuerdo" | "ver_mapa" | "enviar_invitacion";
 
 const TRANSICIONES: Record<Accion, EstadoSesion[]> = {
-  responder: ["in_progress", "waiting_other_response"],
+  responder: ["in_progress", "waiting_other_response", "invitation_created"],
   guardar_hipotesis: ["both_tests_completed", "waiting_hypotheses"],
   aceptar_acuerdo: ["both_tests_completed", "waiting_hypotheses", "waiting_reveal_agreement"],
   ver_mapa: ["reveal_ready", "reveal_opened"],
