@@ -276,6 +276,9 @@ npm run dev -- --port 3002
 ### Build
 48. ✓ Build limpio — 29 páginas, 0 errores, commit `dedad0d` pusheado a main.
 
+### Post-deploy
+49. ✓ **Individual no guardaba respuestas** — `estados.ts` no permitía `responder` desde estado `invitation_created`. Corregido. Commit `c42e870`.
+
 ## Pendiente (próxima sesión)
 
 ### No implementado (requiere infra)
